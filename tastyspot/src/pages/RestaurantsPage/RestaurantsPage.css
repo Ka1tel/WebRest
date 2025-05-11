@@ -1,0 +1,149 @@
+/* Основные стили */
+.restaurants-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: 'Montserrat', sans-serif;
+  color: #333;
+}
+
+/* Шапка */
+.restaurants-header {
+  margin-bottom: 30px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 700;
+  color: #1C1C1C;
+  margin-bottom: 25px;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+/* Панель управления */
+.controls {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 30px;
+  flex-wrap: wrap;
+}
+
+.search-bar {
+  flex: 1;
+  min-width: 300px;
+  position: relative;
+}
+
+.search-bar input {
+  width: 100%;
+  padding: 12px 15px 12px 40px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #F5F5F5;
+}
+
+.search-bar input::placeholder {
+  color: #999;
+}
+
+.search-icon {
+  position: absolute;
+  left: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #999;
+}
+
+.type-filter {
+  padding: 12px 15px;
+  border: 1px solid #E0E0E0;
+  border-radius: 8px;
+  font-size: 16px;
+  background-color: #F5F5F5;
+  color: #333;
+  min-width: 200px;
+  appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  background-size: 15px;
+}
+
+/* Сетка ресторанов */
+.restaurants-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.restaurant-item {
+  display: flex;
+  gap: 20px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: rgb(65, 65, 65);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.rating-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-width: 60px;
+}
+
+.rating-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1C1C1C;
+}
+
+.restaurant-content {
+  flex: 1;
+}
+
+.restaurant-name {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1C1C1C;
+  margin-bottom: 5px;
+}
+
+.restaurant-type {
+  font-size: 14px;
+  font-weight: 600;
+  color: #F5781D;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.restaurant-address {
+  font-size: 14px;
+  color: #666;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .restaurant-item {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .rating-container {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 15px;
+  }
+  
+  .controls {
+    flex-direction: column;
+  }
+  
+  .search-bar,
+  .type-filter {
+    width: 100%;
+  }
+}

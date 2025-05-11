@@ -1,0 +1,326 @@
+/* RestaurantCards.css */
+
+/* Основные цвета */
+:root {
+  
+  --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.restaurant-slider {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.slider-title {
+  background: linear-gradient(90deg, #FFFFFF 0%, #FF740F 100%);
+  -webkit-background-clip: text; /* Важно для Safari */
+  background-clip: text;
+  color: transparent; /* Делаем обычный цвет текста прозрачным */
+  -webkit-text-fill-color: transparent; /* Дополнительно для Safari */
+  
+  font-family: 'Montserrat', sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  margin: 40px 0 20px;
+  text-align: center;
+  position: relative;
+  padding-bottom: 15px;
+}
+
+.slider-title::after {
+  content: "";
+  display: block;
+  width: 80px;
+  height: 3px;
+  background: #ff6b6b;
+  margin: 15px auto 0;
+}
+
+.slider-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.5rem;
+  position: relative;
+}
+
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  width: 100%;
+  padding: 0 10px;
+}
+
+.restaurant-card {
+  background: var(--primary-light);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow);
+  transition: transform 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.restaurant-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.15);
+}
+
+.image-container {
+  position: relative;
+  height: 200px;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.3s ease;
+}
+
+.restaurant-card:hover .image-container img {
+  transform: scale(1.05);
+}
+
+.rating-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(28, 28, 28, 0.8);
+  color: var(--primary-light);
+  padding: 0.5rem 0.8rem;
+  border-radius: 20px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.details {
+  padding: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  background-color: #2a2a2a;
+}
+
+.details h3 {
+  color: var(--primary-dark);
+  font-size: 1.3rem;
+  margin: 0;
+}
+
+.type {
+  color: var(--primary-accent);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.8rem;
+  letter-spacing: 1px;
+}
+
+.address  {
+  background-image: url("http://www.w3.org/2000/svg");
+  background-repeat: no-repeat;
+  background-position: left 10px center;
+  background-size: 15px;
+  color: var(--primary-dark);
+  opacity: 0.8;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.hours {
+  background-image: url("http://www.w3.org/2000/svg");
+  background-repeat: no-repeat;
+  background-position: left 10px center;
+  background-size: 15px;
+  color: var(--primary-dark);
+  opacity: 0.8;
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.description {
+  color: var(--primary-dark);
+  opacity: 0.9;
+  line-height: 1.5;
+  margin: 0.5rem 0;
+  font-size: 0.95rem;
+}
+
+.more-button {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  background: var(--primary-accent);
+  color: var(--primary-light);
+  text-decoration: none;
+  border-radius: 30px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
+  align-self: flex-start;
+  margin-top: 0.5rem;
+  border: none;
+  cursor: pointer;
+}
+
+.more-button:hover {
+  background: #e06d1a;
+  transform: translateY(-2px);
+}
+
+.nav-arrow {
+  background: var(--primary-accent);
+  color: var(--primary-light);
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+}
+
+.nav-arrow:hover {
+  background: #e06d1a;
+  transform: scale(1.1);
+}
+
+.pagination-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ddd;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.dot.active {
+  background: var(--primary-accent);
+  transform: scale(1.2);
+}
+
+/* Состояния загрузки и ошибки */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(245, 120, 29, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--primary-accent);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.error-container {
+  text-align: center;
+  padding: 2rem;
+  background: #ffeeee;
+  border-radius: 8px;
+  max-width: 500px;
+  margin: 2rem auto;
+}
+
+.error-container h3 {
+  color: #d32f2f;
+}
+
+.retry-button {
+  background: var(--primary-accent);
+  color: white;
+  border: none;
+  padding: 0.7rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background 0.3s;
+}
+
+.retry-button:hover {
+  background: #e06d1a;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem;
+}
+
+.empty-state h3 {
+  color: var(--primary-dark);
+  margin: 1rem 0 0.5rem;
+}
+
+.empty-state p {
+  color: var(--primary-dark);
+  opacity: 0.8;
+}
+
+/* Адаптивность */
+@media (max-width: 1000px) {
+  .restaurants-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .restaurant-card {
+    max-width: 100%;
+  }
+  
+  .nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 10;
+  }
+  
+  .nav-arrow.left {
+    left: 0;
+  }
+  
+  .nav-arrow.right {
+    right: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .restaurants-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .slider-title {
+    font-size: 1.5rem;
+  }
+  
+  .details {
+    padding: 1.2rem;
+  }
+}

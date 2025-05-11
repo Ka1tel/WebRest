@@ -1,0 +1,96 @@
+.aboutus {
+    color: #f0f8ff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 36px;
+    font-weight: 700;
+    margin: 40px 0 20px;
+    text-align: center;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.aboutus:after {
+    content: "";
+    display: block;
+    width: 80px;
+    height: 3px;
+    background: #ff6b6b;
+    margin: 15px auto 0;
+}
+
+.textabout {
+    font-family: 'Montserrat', sans-serif;
+    color: #f0f8ff;
+    font-size: 20px;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 30px auto;
+    padding: 0 20px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.desctext {
+    font-family: 'Montserrat', sans-serif;
+    color: rgba(240, 248, 255, 0.9);
+    font-size: 16px;
+    line-height: 1.8;
+    max-width: 700px;
+    margin: 0 auto 40px;
+    padding: 0 30px;
+    text-align: justify;
+    text-align: center;
+}
+
+.feature {
+    font-family: 'Montserrat', sans-serif;
+    background-color: rgba(30, 30, 30, 0.8);
+    color: #f0f8ff;
+    margin: 20px;
+    padding: 25px;
+    border-radius: 16px;
+    width: 400px;
+    min-height: 110px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border-left: 4px solid #ff6b6b;
+}
+
+.feature:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.Cards {
+    margin-left: 0;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.Content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.rew, .fire, .people {
+    font-size: 40px;
+    margin-right: 20px;
+    color: #ff6b6b;
+    min-width: 50px;
+    text-align: center;
+}
+
+.feature-text {
+    flex: 1;
+    font-size: 16px;
+    line-height: 1.6;
+}

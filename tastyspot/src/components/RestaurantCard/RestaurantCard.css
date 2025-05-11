@@ -1,0 +1,154 @@
+/* RestaurantCard.css */
+.restaurant-card {
+    display: flex;
+    flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #2a2a2a;
+    text-decoration: none;
+    color: #f0f0f0;
+    border: 1px solid #333;
+    position: relative;
+}
+
+.restaurant-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    background: #303030;
+}
+
+.card-image-container {
+    position: relative;
+    width: 100%;
+    height: 200px;
+    overflow: hidden;
+    background: #222;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    opacity: 0.85;
+}
+
+.card-image.slideshow-active {
+    animation: fadeInOut 2s infinite alternate;
+}
+
+.restaurant-card:hover .card-image {
+    transform: scale(1.03);
+    opacity: 0.95;
+}
+
+.photo-counter {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    background: rgba(20, 20, 20, 0.85);
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    color: #d0d0d0;
+    z-index: 2;
+    backdrop-filter: blur(4px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 24px 16px 12px;
+    z-index: 1;
+}
+
+.restaurant-title {
+    margin: 0;
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+    letter-spacing: 0.3px;
+}
+
+.rating-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(20, 20, 20, 0.85);
+    padding: 6px 14px;
+    border-radius: 24px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-weight: bold;
+    color: #ffd700;
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    font-size: 0.95rem;
+    z-index: 1;
+}
+
+.rating-icon {
+    color: #ffd700;
+    font-size: 0.9rem;
+}
+
+.card-content {
+    padding: 18px;
+    background: #2a2a2a;
+    border-top: 1px solid #333;
+}
+
+.details {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.type, .address, .hours {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.95rem;
+    color: #d0d0d0;
+}
+
+.type {
+    font-weight: 500;
+    color: #ffffff;
+}
+
+.type-icon {
+    color: #bb86fc;
+    font-size: 1.1rem;
+}
+
+.address-icon, .hours-icon {
+    color: #757575;
+    min-width: 18px;
+    font-size: 1rem;
+}
+
+.card-image-container::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    box-shadow: inset 0 0 60px rgba(0,0,0,0.7);
+    pointer-events: none;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.85; }
+    50% { opacity: 0.95; }
+}

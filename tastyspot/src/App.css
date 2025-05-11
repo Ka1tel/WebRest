@@ -1,0 +1,142 @@
+/* Базовые сбросы */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  
+}
+
+body, html, #root {
+  margin: 0 !important;
+  padding: 0 !important;
+  background: #121212 !important;
+}
+.app {
+  background-color: #121212 !important;
+  min-height: 100vh;
+  color: white;
+}
+/* Основные стили */
+.app-container {
+  min-height: 100vh;
+  background-color: #121212; /* Темный фон */
+  color: #ffffff; /* Белый текст */
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  padding: 20px;
+}
+
+/* Стили для текста */
+.loading, .error {
+  text-align: center;
+  padding: 20px;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #ff6b6b;
+}
+
+.users-list {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.users-list h2 {
+  margin-bottom: 15px;
+}
+
+.users-list ul {
+  list-style: none;
+}
+
+.users-list li {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+}
+
+/* Общие стили форм */
+.auth-container {
+  max-width: 480px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.auth-title {
+  color: #ff6b00;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
+}
+
+.auth-subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 2rem;
+  font-size: 1rem;
+}
+
+.input-group {
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #333;
+  font-weight: 500;
+}
+
+.input-field {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #eee;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+}
+
+.input-field:focus {
+  border-color: #ff6b00;
+  outline: none;
+}
+
+.auth-button {
+  width: 100%;
+  padding: 14px;
+  background-color: #ff6b00;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.auth-button:hover {
+  background-color: #e05d00;
+}
+
+.auth-links {
+  margin-top: 1.5rem;
+  text-align: center;
+}
+
+.auth-link {
+  color: #ff6b00;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.auth-link:hover {
+  text-decoration: underline;
+}

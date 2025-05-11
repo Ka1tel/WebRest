@@ -1,0 +1,223 @@
+/* Основные стили */
+.registration-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 100vh;
+  background: #121212;
+  padding: 40px 20px;
+  font-family: 'Arial', sans-serif;
+  color: #ffffff;
+}
+
+.registration-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.registration-header h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: #ffffff;
+}
+
+.registration-header p {
+  font-size: 16px;
+  color: #aaaaaa;
+}
+
+.registration-card {
+  background: #1e1e1e;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  padding: 40px;
+  width: 100%;
+  max-width: 480px;
+  border-top: 4px solid #ff6b00;
+}
+
+.registration-card h2 {
+  color: #ffffff;
+  font-size: 24px;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.registration-card p {
+  color: #aaaaaa;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* Форма */
+.registration-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.input-group {
+  position: relative;
+}
+
+.input-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #aaaaaa;
+}
+
+input {
+  width: 100%;
+  padding: 14px 14px 14px 44px;
+  border: 1px solid #333;
+  border-radius: 6px;
+  font-size: 16px;
+  transition: all 0.3s;
+  background: #2a2a2a;
+  color: #ffffff;
+}
+
+input::placeholder {
+  color: #666;
+}
+
+input:focus {
+  outline: none;
+  border-color: #ff6b00;
+  background: #333;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #aaaaaa;
+  cursor: pointer;
+}
+
+/* Кнопка отправки */
+.submit-button {
+  background: #ff6b00;
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 6px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.submit-button:hover {
+  background: #ff8c00;
+}
+
+.submit-button:disabled {
+  background: #666;
+  cursor: not-allowed;
+}
+
+/* Футер формы */
+.registration-footer {
+  margin-top: 24px;
+  text-align: center;
+  color: #aaaaaa;
+}
+
+.login-link {
+  color: #ff6b00;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+/* Оповещения */
+.alert {
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+
+.alert.error {
+  background: #3a1d1d;
+  color: #ff5252;
+  border: 1px solid #ff5252;
+}
+
+/* Адаптивность */
+@media (max-width: 600px) {
+  .registration-card {
+    padding: 30px 20px;
+  }
+  
+  .registration-header h1 {
+    font-size: 28px;
+  }
+  
+  .registration-card h2 {
+    font-size: 20px;
+  }
+}
+
+/* Стиль для индикатора загрузки */
+.spinner {
+  display: inline-block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Улучшенные стили для кнопки переключения видимости пароля */
+.password-toggle {
+  background: none;
+  border: none;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  color: #666;
+  padding: 0;
+}
+
+.password-toggle:hover {
+  color: #ff6b00;
+}
+
+/* Стили для уведомления о условиях */
+.terms-notice {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.terms-link {
+  color: #ff6b00;
+  text-decoration: none;
+}
+
+.terms-link:hover {
+  text-decoration: underline;
+}
