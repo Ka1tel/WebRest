@@ -12,9 +12,9 @@ export default function CardAbout() {
     <div className='desctext'>P.S.Мы не просто пишем о еде.</div>
     </div>
     <div className='Cards'>
-    <div class="feature"><i class="bi bi-chat-left-heart rew"></i>Детальные обзоры — от интерьера до послевкусия.</div>
-        <div class="feature"><i class="bi bi-fire fire"></i>Только то, что стоит попробовать — без воды и рекламного мусора.</div>
-        <div class="feature"><i class="bi bi-people-fill people"></i>Реальные отзывы — без фейков и подделок.</div>
+    <div className="feature"><i class="bi bi-chat-left-heart rew"></i>Детальные обзоры — от интерьера до послевкусия.</div>
+        <div className="feature"><i class="bi bi-fire fire"></i>Только то, что стоит попробовать — без воды и рекламного мусора.</div>
+        <div className="feature"><i class="bi bi-people-fill people"></i>Реальные отзывы — без фейков и подделок.</div>
         </div>
         </div>
     </>

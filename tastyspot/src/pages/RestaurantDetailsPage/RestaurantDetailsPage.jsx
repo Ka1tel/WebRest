@@ -8,67 +8,101 @@ import {
   FiStar,
   FiPhone,
   FiChevronLeft,
-  FiChevronRight
+  FiChevronRight,
+  FiEdit2,
+  FiTrash2,
+  FiUser
 } from 'react-icons/fi';
 import './RestaurantDetailsPage.css';
 
+const StarRating = ({ rating, onRatingChange, readOnly = false }) => {
+  const handleClick = (newRating) => {
+    if (!readOnly && onRatingChange) {
+      onRatingChange(newRating);
+    }
+  };
+
+  return (
+    <div className={`star-rating ${readOnly ? 'read-only' : ''}`}>
+      {[1, 2, 3, 4, 5].map((star) => (
+        <span
+          key={star}
+          className={`star ${star <= rating ? 'filled' : ''}`}
+          onClick={() => handleClick(star)}
+        >
+          <FiStar />
+        </span>
+      ))}
+    </div>
+  );
+};
+
 const RestaurantDetailsPage = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
+  
+  // Состояния для данных ресторана
   const [restaurant, setRestaurant] = useState(null);
   const [menu, setMenu] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const navigate = useNavigate();
+  
+ 
+  const [reviews, setReviews] = useState([]);
+  const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
+  const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
+  const [user, setUser] = useState(null);
+  const [isEditing, setIsEditing] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
-        const restaurantRes = await axios.get(`http://localhost:5000/api/restaurants/${id}`);
-        const menuRes = await axios.get(`http://localhost:5000/api/menu`, {
-          params: { restaurant_id: id }
-        });
-
-        if (!restaurantRes.data) {
-          throw new Error('Ресторан не найден');
+        const [restaurantRes, menuRes, reviewsRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/restaurants/${id}`),
+          axios.get(`http://localhost:5000/api/menu`, {
+            params: { restaurant_id: id }
+          }),
+          axios.get(`http://localhost:5000/api/reviews`, {
+            params: { restaurant_id: id }
+          })
+        ]);
+  
+        if (restaurantRes.data) {
+          
+          const restaurantData = {
+            ...restaurantRes.data,
+           
+            images: restaurantRes.data.photo_url 
+              ? restaurantRes.data.photo_url.split(',').map(url => url.trim()) 
+              : []
+          };
+          setRestaurant(restaurantData);
+        } else {
+          setError('Ресторан не найден');
         }
-
-        // Обработка фото: разделяем строку по запятым и удаляем пустые значения
-        const photoUrls = restaurantRes.data.photo_url 
-          ? restaurantRes.data.photo_url.split(',').map(url => url.trim()).filter(url => url)
-          : [];
         
-        const rating = parseFloat(restaurantRes.data.rating);
-        
-        setRestaurant({
-          ...restaurantRes.data,
-          rating: isNaN(rating) ? null : rating,
-          images: [
-            ...photoUrls,
-            ...(restaurantRes.data.additional_photos || [])
-          ].filter(url => url && url.trim() !== '')
-        });
-
-        const menuData = Array.isArray(menuRes.data) 
-          ? menuRes.data.map(item => ({
-              ...item,
-              price: parseFloat(item.price) || 0,
-              weight: item.weight ? parseInt(item.weight) : null
-            }))
-          : [];
-        
-        setMenu(menuData);
+  
+       
+        setMenu(menuRes.data || []);
+   
+        console.log('Отзывы:', reviewsRes.data);
+        setReviews(reviewsRes.data || []);
         
       } catch (err) {
         console.error('Ошибка загрузки данных:', err);
-        setError(err.response?.data?.message || err.message);
+        if (err.response?.status === 404) {
+          setError('Ресторан не найден');
+        } else {
+          setError(err.response?.data?.message || err.message || 'Произошла ошибка');
+        }
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchData();
   }, [id]);
 
@@ -93,6 +127,83 @@ const RestaurantDetailsPage = () => {
     setCurrentImageIndex(prev => 
       prev === 0 ? restaurant.images.length - 1 : prev - 1
     );
+  };
+
+  
+
+  const handleEditReview = (review) => {
+    setNewReview({
+      rating: review.rating,
+      comment: review.comment
+    });
+    setIsEditing(review.id);
+    setIsReviewFormOpen(true);
+  };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (isEditing) {
+        const response = await axios.put(
+          `http://localhost:5000/api/reviews/${isEditing}`,
+          { 
+            restaurant_id: id,
+            rating: newReview.rating,
+            comment: newReview.comment 
+          },
+          {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }
+        );
+        
+        setReviews(reviews.map(review => 
+          review.id === isEditing ? response.data : review
+        ));
+      } else {
+        const response = await axios.post(
+          `http://localhost:5000/api/reviews`,
+          { 
+            restaurant_id: id,
+            rating: newReview.rating,
+            comment: newReview.comment 
+          },
+          {
+            headers: { 'Authorization': `Bearer ${token}` }
+          }
+        );
+        
+        setReviews([response.data, ...reviews]);
+      }
+      
+      setNewReview({ rating: 0, comment: '' });
+      setIsReviewFormOpen(false);
+      setIsEditing(null);
+    } catch (err) {
+      console.error('Ошибка при отправке отзыва:', err);
+      alert(err.response?.data?.error || 'Не удалось отправить отзыв');
+    }
+  };
+  
+  const handleDeleteReview = async (reviewId) => {
+    if (window.confirm('Вы уверены, что хотите удалить этот отзыв?')) {
+      try {
+        const token = localStorage.getItem('token');
+        await axios.delete(
+          `http://localhost:5000/api/reviews/${reviewId}`,
+          {
+            headers: { 'Authorization': `Bearer ${token}` },
+            data: { restaurant_id: id }
+          }
+        );
+        
+        setReviews(reviews.filter(review => review.id !== reviewId));
+      } catch (err) {
+        console.error('Ошибка при удалении отзыва:', err);
+        alert('Не удалось удалить отзыв');
+      }
+    }
   };
 
   if (loading) return (
@@ -141,7 +252,6 @@ const RestaurantDetailsPage = () => {
                 }}
               />
               
-              {/* Навигация слайдера */}
               {restaurant.images.length > 1 && (
                 <>
                   <button 
@@ -157,7 +267,6 @@ const RestaurantDetailsPage = () => {
                     <FiChevronRight size={24} />
                   </button>
                   
-                  {/* Индикаторы слайдера */}
                   <div className="slider-indicators">
                     {restaurant.images.map((_, index) => (
                       <span 
@@ -248,6 +357,105 @@ const RestaurantDetailsPage = () => {
                     </div>
                   ))}
                 </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Секция отзывов */}
+      <div className="reviews-section">
+        <div className="reviews-header">
+          <h2>Отзывы</h2>
+          {user && (
+            <button 
+              className="add-review-button"
+              onClick={() => {
+                setNewReview({ rating: 0, comment: '' });
+                setIsEditing(null);
+                setIsReviewFormOpen(true);
+              }}
+            >
+              Написать отзыв
+            </button>
+          )}
+        </div>
+
+        {isReviewFormOpen && (
+          <form onSubmit={handleReviewSubmit} className="review-form">
+            <div className="form-group">
+              <label>Ваша оценка:</label>
+              <StarRating
+                rating={newReview.rating}
+                onRatingChange={(rating) => setNewReview({...newReview, rating})}
+              />
+            </div>
+            <div className="form-group">
+              <label>Комментарий:</label>
+              <textarea
+                value={newReview.comment}
+                onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
+                required
+                maxLength="500"
+                placeholder="Опишите ваши впечатления (максимум 500 символов)"
+              />
+            </div>
+            <div className="form-actions">
+              <button 
+                type="button" 
+                className="cancel-button"
+                onClick={() => setIsReviewFormOpen(false)}
+              >
+                Отмена
+              </button>
+              <button type="submit" className="submit-button">
+                {isEditing ? 'Обновить отзыв' : 'Отправить'}
+              </button>
+            </div>
+          </form>
+        )}
+
+        {reviews.length === 0 ? (
+          <p className="no-reviews">Пока нет отзывов. Будьте первым!</p>
+        ) : (
+          <div className="reviews-list">
+            {reviews.map(review => (
+              <div key={review.id} className="review-card">
+                <div className="review-header">
+                  <div className="user-info">
+                    <div className="user-avatar">
+                      {review.username?.charAt(0).toUpperCase() || <FiUser />}
+                    </div>
+                    <div>
+                      <h4>{review.username || 'Анонимный пользователь'}</h4>
+                      <span className="review-date">
+                        {new Date(review.created_at).toLocaleDateString('ru-RU', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </span>
+                    </div>
+                  </div>
+                  <StarRating rating={review.rating} readOnly />
+                </div>
+                <p className="review-comment">{review.comment}</p>
+                {user && user.id === review.user_id && (
+                  <div className="review-actions">
+                    <button 
+                      className="edit-button"
+                      onClick={() => handleEditReview(review)}
+                    >
+                      <FiEdit2 />
+                    </button>
+                    <button 
+                      className="delete-button"
+                      onClick={() => handleDeleteReview(review.id)}
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </div>
+                )}
               </div>
             ))}
           </div>

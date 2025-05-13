@@ -534,6 +534,7 @@ app.get('/api/menu', async (req, res) => {
 });
 
 
+
 // Получить конкретный ресторан
 app.get('/api/restaurants/:id', async (req, res) => {
   try {
@@ -562,7 +563,15 @@ app.get('/api/restaurants/:id', async (req, res) => {
       return res.status(404).json({ error: 'Restaurant not found' });
     }
     
-    res.json(rows[0]);
+    // Обработка photo_url - разделяем по запятым
+    const restaurant = rows[0];
+    if (restaurant.photo_url) {
+      restaurant.images = restaurant.photo_url.split(',').map(url => url.trim());
+    } else {
+      restaurant.images = [];
+    }
+    
+    res.json(restaurant);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
@@ -619,6 +628,100 @@ app.get('/api/restaurants/type/:type', async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+// Создание отзыва
+app.post('/api/reviews', authenticateToken, async (req, res) => {
+  try {
+    const { restaurant_id, rating, comment } = req.body;
+    const userId = req.user.userId;
+
+    // Валидация
+    if (!restaurant_id || !rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Invalid input data" });
+    }
+
+    const { rows } = await pool.query(`
+      INSERT INTO reviews (restaurant_id, user_id, rating, comment)
+      VALUES ($1, $2, $3, $4)
+      RETURNING id, rating, comment, created_at
+    `, [restaurant_id, userId, rating, comment]);
+
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Редактирование отзыва
+app.put('/api/reviews/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { restaurant_id, rating, comment } = req.body;
+    const userId = req.user.userId;
+
+    if (!restaurant_id || !rating || rating < 1 || rating > 5) {
+      return res.status(400).json({ error: "Invalid input data" });
+    }
+
+    // Проверяем, что отзыв принадлежит пользователю
+    const reviewCheck = await pool.query(
+      'SELECT user_id FROM reviews WHERE id = $1 AND restaurant_id = $2',
+      [id, restaurant_id]
+    );
+
+    if (reviewCheck.rows.length === 0) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    if (reviewCheck.rows[0].user_id !== userId) {
+      return res.status(403).json({ error: "You can only edit your own reviews" });
+    }
+
+    const { rows } = await pool.query(`
+      UPDATE reviews 
+      SET 
+        rating = $1,
+        comment = $2,
+        updated_at = NOW()
+      WHERE id = $3
+      RETURNING id, rating, comment, created_at, updated_at
+    `, [rating, comment, id]);
+
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Удаление отзыва
+app.delete('/api/reviews/:id', authenticateToken, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { restaurant_id } = req.body;
+    const userId = req.user.userId;
+
+    // Проверяем, что отзыв принадлежит пользователю
+    const reviewCheck = await pool.query(
+      'SELECT user_id FROM reviews WHERE id = $1 AND restaurant_id = $2',
+      [id, restaurant_id]
+    );
+
+    if (reviewCheck.rows.length === 0) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    if (reviewCheck.rows[0].user_id !== userId) {
+      return res.status(403).json({ error: "You can only delete your own reviews" });
+    }
+
+    await pool.query('DELETE FROM reviews WHERE id = $1', [id]);
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 // Получение блюд
 
@@ -660,18 +763,46 @@ app.get('/api/ingredients', async (req, res) => {
   }
 });
 
-app.use((req, res) => {
-  res.status(404).json({ error: 'Endpoint not found' });
-});
 
+// Получение отзывов для ресторана
+app.get('/api/reviews', async (req, res) => {
+  try {
+    const { restaurant_id } = req.query;
+    
+    if (!restaurant_id) {
+      return res.status(400).json({ error: "restaurant_id parameter is required" });
+    }
+
+    const { rows } = await pool.query(`
+      SELECT 
+        r.id,
+        r.rating,
+        r.comment,
+        r.created_at,
+        r.updated_at,
+        u.username,
+        u.id as user_id
+      FROM reviews r
+      LEFT JOIN users u ON r.user_id = u.id
+      WHERE r.restaurant_id = $1
+      ORDER BY r.created_at DESC
+    `, [restaurant_id]);
+    
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
   res.status(500).json({ error: 'Something broke!' });
 });
 
-
-
+app.use((req, res) => {
+  res.status(404).json({ error: 'Endpoint not found' });
+});
 
 app.listen(PORT, () => {
   console.log(`Сервер запущен на http://localhost:${PORT}`);
