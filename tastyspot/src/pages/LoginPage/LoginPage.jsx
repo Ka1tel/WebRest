@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiMail, FiLock } from 'react-icons/fi';
 import axios from 'axios';
 import '../../styles/AuthStyles.css';
+import { jwtDecode } from 'jwt-decode';
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -12,6 +13,7 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e) => {
     setFormData({
@@ -32,9 +34,17 @@ export default function LoginPage() {
       });
 
       if (response.data.success) {
+        // Сохраняем токен и данные пользователя
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/');
+        
+        // Проверяем, откуда пришел пользователь
+        const from = location.state?.from?.pathname || '/';
+        navigate(from, {
+          state: { 
+            token: response.data.token // Передаем токен в state
+          }
+        });
       }
     } catch (err) {
       if (err.response) {

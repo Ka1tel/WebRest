@@ -1,6 +1,7 @@
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 import { 
   FiArrowLeft,
   FiClock,
@@ -40,26 +41,58 @@ const StarRating = ({ rating, onRatingChange, readOnly = false }) => {
 const RestaurantDetailsPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   
-  // Состояния для данных ресторана
   const [restaurant, setRestaurant] = useState(null);
   const [menu, setMenu] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   
- 
   const [reviews, setReviews] = useState([]);
   const [newReview, setNewReview] = useState({ rating: 0, comment: '' });
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(null);
 
+  // Функция проверки авторизации
+  const checkAuth = () => {
+    const token = localStorage.getItem('token');
+    if (!token) {
+      navigate('/login', { state: { from: location.pathname } });
+      return false;
+    }
+
+    try {
+      const decoded = jwtDecode(token);
+      // Проверяем срок действия токена
+      if (decoded.exp * 1000 < Date.now()) {
+        localStorage.removeItem('token');
+        navigate('/login', { state: { from: location.pathname } });
+        return false;
+      }
+
+      setUser({
+        id: decoded.userId,
+        username: decoded.username,
+        email: decoded.email
+      });
+      return true;
+    } catch (err) {
+      localStorage.removeItem('token');
+      navigate('/login', { state: { from: location.pathname } });
+      return false;
+    }
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
         
+        // Проверяем авторизацию перед загрузкой данных
+        if (!checkAuth()) return;
+
         const [restaurantRes, menuRes, reviewsRes] = await Promise.all([
           axios.get(`http://localhost:5000/api/restaurants/${id}`),
           axios.get(`http://localhost:5000/api/menu`, {
@@ -69,12 +102,10 @@ const RestaurantDetailsPage = () => {
             params: { restaurant_id: id }
           })
         ]);
-  
+
         if (restaurantRes.data) {
-          
           const restaurantData = {
             ...restaurantRes.data,
-           
             images: restaurantRes.data.photo_url 
               ? restaurantRes.data.photo_url.split(',').map(url => url.trim()) 
               : []
@@ -83,17 +114,16 @@ const RestaurantDetailsPage = () => {
         } else {
           setError('Ресторан не найден');
         }
-        
-  
-       
+
         setMenu(menuRes.data || []);
-   
-        console.log('Отзывы:', reviewsRes.data);
         setReviews(reviewsRes.data || []);
         
       } catch (err) {
         console.error('Ошибка загрузки данных:', err);
-        if (err.response?.status === 404) {
+        if (err.response?.status === 401) {
+          localStorage.removeItem('token');
+          navigate('/login');
+        } else if (err.response?.status === 404) {
           setError('Ресторан не найден');
         } else {
           setError(err.response?.data?.message || err.message || 'Произошла ошибка');
@@ -102,9 +132,9 @@ const RestaurantDetailsPage = () => {
         setLoading(false);
       }
     };
-  
+
     fetchData();
-  }, [id]);
+  }, [id, location.pathname, navigate]);
 
   const groupByCategory = () => {
     return menu.reduce((acc, item) => {
@@ -129,9 +159,12 @@ const RestaurantDetailsPage = () => {
     );
   };
 
-  
-
   const handleEditReview = (review) => {
+    if (!checkAuth()) {
+      alert('Для редактирования отзыва необходимо авторизоваться');
+      return;
+    }
+
     setNewReview({
       rating: review.rating,
       comment: review.comment
@@ -142,65 +175,90 @@ const RestaurantDetailsPage = () => {
 
   const handleReviewSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!checkAuth()) {
+      alert('Для отправки отзыва необходимо авторизоваться');
+      return;
+    }
+
+    // Валидация данных
+    if (newReview.rating < 1 || newReview.rating > 5) {
+      alert('Оценка должна быть от 1 до 5 звезд');
+      return;
+    }
+
+    if (!newReview.comment.trim() || newReview.comment.trim().length < 10) {
+      alert('Комментарий должен содержать минимум 10 символов');
+      return;
+    }
+
     try {
       const token = localStorage.getItem('token');
-      
-      if (isEditing) {
-        const response = await axios.put(
-          `http://localhost:5000/api/reviews/${isEditing}`,
-          { 
-            restaurant_id: id,
-            rating: newReview.rating,
-            comment: newReview.comment 
-          },
-          {
-            headers: { 'Authorization': `Bearer ${token}` }
+      const response = await axios.post(
+        `http://localhost:5000/api/reviews`,
+        { 
+          restaurant_id: id,
+          rating: newReview.rating,
+          comment: newReview.comment.trim()
+        },
+        {
+          headers: { 
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
-        );
-        
-        setReviews(reviews.map(review => 
-          review.id === isEditing ? response.data : review
-        ));
-      } else {
-        const response = await axios.post(
-          `http://localhost:5000/api/reviews`,
-          { 
-            restaurant_id: id,
-            rating: newReview.rating,
-            comment: newReview.comment 
-          },
-          {
-            headers: { 'Authorization': `Bearer ${token}` }
-          }
-        );
-        
-        setReviews([response.data, ...reviews]);
-      }
-      
+        }
+      );
+
+      const reviewWithUser = {
+        ...response.data,
+        username: user.username,
+        user_id: user.id
+      };
+
+      setReviews([reviewWithUser, ...reviews]);
       setNewReview({ rating: 0, comment: '' });
       setIsReviewFormOpen(false);
       setIsEditing(null);
+      
     } catch (err) {
       console.error('Ошибка при отправке отзыва:', err);
-      alert(err.response?.data?.error || 'Не удалось отправить отзыв');
+      const errorMessage = err.response?.data?.error || 
+                          err.message || 
+                          'Не удалось отправить отзыв';
+      alert(errorMessage);
+      
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      }
     }
   };
-  
+
   const handleDeleteReview = async (reviewId) => {
-    if (window.confirm('Вы уверены, что хотите удалить этот отзыв?')) {
-      try {
-        const token = localStorage.getItem('token');
-        await axios.delete(
-          `http://localhost:5000/api/reviews/${reviewId}`,
-          {
-            headers: { 'Authorization': `Bearer ${token}` },
-            data: { restaurant_id: id }
-          }
-        );
-        
-        setReviews(reviews.filter(review => review.id !== reviewId));
-      } catch (err) {
-        console.error('Ошибка при удалении отзыва:', err);
+    if (!window.confirm('Вы уверены, что хотите удалить этот отзыв?')) return;
+    
+    if (!checkAuth()) {
+      alert('Для удаления отзыва необходимо авторизоваться');
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(
+        `http://localhost:5000/api/reviews/${reviewId}`,
+        {
+          headers: { 'Authorization': `Bearer ${token}` },
+          data: { restaurant_id: id }
+        }
+      );
+      
+      setReviews(reviews.filter(review => review.id !== reviewId));
+    } catch (err) {
+      console.error('Ошибка при удалении отзыва:', err);
+      if (err.response?.status === 401) {
+        localStorage.removeItem('token');
+        navigate('/login');
+      } else {
         alert('Не удалось удалить отзыв');
       }
     }
@@ -234,14 +292,13 @@ const RestaurantDetailsPage = () => {
 
   return (
     <div className="restaurant-details-container">
-      {/* Шапка ресторана */}
       <div className="restaurant-header">
         <button onClick={() => navigate(-1)} className="back-button">
           <FiArrowLeft size={24} />
         </button>
         
         <div className="restaurant-image-container">
-          {restaurant.images.length > 0 && (
+          {restaurant.images.length > 0 ? (
             <>
               <img 
                 src={restaurant.images[currentImageIndex]} 
@@ -279,6 +336,12 @@ const RestaurantDetailsPage = () => {
                 </>
               )}
             </>
+          ) : (
+            <img 
+              src="/default-restaurant.jpg" 
+              alt={restaurant.name || 'Ресторан'}
+              className="default-restaurant-image"
+            />
           )}
         </div>
         
@@ -295,7 +358,6 @@ const RestaurantDetailsPage = () => {
         </div>
       </div>
 
-      {/* Контактная информация */}
       <div className="contact-info">
         <div className="info-item">
           <FiMapPin />
@@ -313,7 +375,6 @@ const RestaurantDetailsPage = () => {
         )}
       </div>
 
-      {/* Описание */}
       {restaurant.description && (
         <div className="description-section">
           <h2>О ресторане</h2>
@@ -321,7 +382,6 @@ const RestaurantDetailsPage = () => {
         </div>
       )}
 
-      {/* Меню */}
       <div className="menu-section">
         <h2>Меню</h2>
         
@@ -363,22 +423,24 @@ const RestaurantDetailsPage = () => {
         )}
       </div>
 
-      {/* Секция отзывов */}
       <div className="reviews-section">
         <div className="reviews-header">
           <h2>Отзывы</h2>
-          {user && (
-            <button 
-              className="add-review-button"
-              onClick={() => {
-                setNewReview({ rating: 0, comment: '' });
-                setIsEditing(null);
-                setIsReviewFormOpen(true);
-              }}
-            >
-              Написать отзыв
-            </button>
-          )}
+          <button 
+  className="add-review-button"
+  onClick={() => {
+    if (!checkAuth()) {
+      alert('Для добавления отзыва необходимо авторизоваться');
+      navigate('/login');
+      return;
+    }
+    setNewReview({ rating: 0, comment: '' });
+    setIsEditing(null);
+    setIsReviewFormOpen(true);
+  }}
+>
+  Написать отзыв
+</button>
         </div>
 
         {isReviewFormOpen && (
@@ -389,6 +451,9 @@ const RestaurantDetailsPage = () => {
                 rating={newReview.rating}
                 onRatingChange={(rating) => setNewReview({...newReview, rating})}
               />
+              {newReview.rating === 0 && (
+                <p className="validation-error">Пожалуйста, поставьте оценку</p>
+              )}
             </div>
             <div className="form-group">
               <label>Комментарий:</label>
@@ -396,19 +461,32 @@ const RestaurantDetailsPage = () => {
                 value={newReview.comment}
                 onChange={(e) => setNewReview({...newReview, comment: e.target.value})}
                 required
+                minLength="10"
                 maxLength="500"
-                placeholder="Опишите ваши впечатления (максимум 500 символов)"
+                placeholder="Опишите ваши впечатления (от 10 до 500 символов)"
               />
+              {newReview.comment.length < 10 && (
+                <p className="validation-error">
+                  Комментарий должен содержать минимум 10 символов
+                </p>
+              )}
             </div>
             <div className="form-actions">
               <button 
                 type="button" 
                 className="cancel-button"
-                onClick={() => setIsReviewFormOpen(false)}
+                onClick={() => {
+                  setIsReviewFormOpen(false);
+                  setIsEditing(null);
+                }}
               >
                 Отмена
               </button>
-              <button type="submit" className="submit-button">
+              <button 
+                type="submit" 
+                className="submit-button"
+                disabled={newReview.rating === 0 || newReview.comment.length < 10}
+              >
                 {isEditing ? 'Обновить отзыв' : 'Отправить'}
               </button>
             </div>
