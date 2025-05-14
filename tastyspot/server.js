@@ -653,44 +653,29 @@ app.post('/api/reviews', authenticateToken, async (req, res) => {
 });
 
 // Редактирование отзыва
+
 app.put('/api/reviews/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     const { restaurant_id, rating, comment } = req.body;
     const userId = req.user.userId;
 
-    if (!restaurant_id || !rating || rating < 1 || rating > 5) {
-      return res.status(400).json({ error: "Invalid input data" });
-    }
-
-    // Проверяем, что отзыв принадлежит пользователю
-    const reviewCheck = await pool.query(
-      'SELECT user_id FROM reviews WHERE id = $1 AND restaurant_id = $2',
-      [id, restaurant_id]
+    const { rows } = await pool.query(
+      `UPDATE reviews 
+       SET rating = $1, comment = $2, updated_at = NOW()
+       WHERE id = $3 AND user_id = $4 AND restaurant_id = $5
+       RETURNING id, rating, comment, created_at, updated_at`,
+      [rating, comment, id, userId, restaurant_id]
     );
 
-    if (reviewCheck.rows.length === 0) {
-      return res.status(404).json({ error: "Review not found" });
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Отзыв не найден или у вас нет прав для редактирования" });
     }
-
-    if (reviewCheck.rows[0].user_id !== userId) {
-      return res.status(403).json({ error: "You can only edit your own reviews" });
-    }
-
-    const { rows } = await pool.query(`
-      UPDATE reviews 
-      SET 
-        rating = $1,
-        comment = $2,
-        updated_at = NOW()
-      WHERE id = $3
-      RETURNING id, rating, comment, created_at, updated_at
-    `, [rating, comment, id]);
 
     res.json(rows[0]);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Ошибка сервера' });
   }
 });
 
