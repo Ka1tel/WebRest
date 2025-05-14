@@ -54,6 +54,7 @@ const RestaurantDetailsPage = () => {
   const [isReviewFormOpen, setIsReviewFormOpen] = useState(false);
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
 
   // Проверяем авторизацию (без редиректа)
   const checkAuth = () => {
@@ -127,6 +128,150 @@ const RestaurantDetailsPage = () => {
 
     fetchData();
   }, [id]);
+
+  useEffect(() => {
+    if (!restaurant?.address) return;
+  
+    let isMounted = true;
+    let mapInstance = null;
+    let script = null;
+  
+    const initMap = () => {
+      // Проверяем, что API полностью загружено
+      if (!window.ymaps || !window.ymaps.Map) {
+        console.error('API Яндекс.Карт не загружено корректно');
+        return;
+      }
+  
+      try {
+        // Создаем карту
+        mapInstance = new window.ymaps.Map('yandex-map', {
+          center: [53.902284, 27.561831],
+          zoom: 12,
+          controls: ['zoomControl']
+        });
+  
+        // Добавляем временную метку
+        const tempPlacemark = new window.ymaps.Placemark(
+          [53.902284, 27.561831],
+          {
+            hintContent: 'Идет поиск адреса...',
+            balloonContent: restaurant.address
+          },
+          {
+            preset: 'islands#grayDotIcon'
+          }
+        );
+        mapInstance.geoObjects.add(tempPlacemark);
+  
+        // Пробуем найти адрес
+        window.ymaps.geocode(restaurant.address, {
+          results: 1
+        }).then(res => {
+          if (!isMounted || !mapInstance) return;
+  
+          const firstGeoObject = res.geoObjects.get(0);
+          if (!firstGeoObject) {
+            throw new Error('Адрес не найден');
+          }
+  
+          const coords = firstGeoObject.geometry.getCoordinates();
+          
+          // Обновляем метку
+          mapInstance.geoObjects.removeAll();
+          const placemark = new window.ymaps.Placemark(
+            coords,
+            {
+              hintContent: restaurant.name,
+              balloonContent: restaurant.address
+            },
+            {
+              preset: 'islands#redIcon'
+            }
+          );
+          mapInstance.geoObjects.add(placemark);
+          mapInstance.setCenter(coords, 15);
+  
+        }).catch(error => {
+          console.error('Ошибка геокодирования:', error);
+          if (!isMounted || !mapInstance) return;
+          
+          // Обновляем метку с сообщением об ошибке
+          mapInstance.geoObjects.removeAll();
+          const errorPlacemark = new window.ymaps.Placemark(
+            [53.902284, 27.561831],
+            {
+              hintContent: 'Адрес не найден',
+              balloonContent: `Не удалось найти: ${restaurant.address}`
+            },
+            {
+              preset: 'islands#redDotIcon'
+            }
+          );
+          mapInstance.geoObjects.add(errorPlacemark);
+        });
+  
+      } catch (error) {
+        console.error('Ошибка создания карты:', error);
+      }
+    };
+  
+    // Проверяем загрузку API
+    const checkApiLoaded = () => {
+      if (window.ymaps && window.ymaps.Map) {
+        initMap();
+      } else {
+        // Ждем готовности API
+        const checkInterval = setInterval(() => {
+          if (window.ymaps && window.ymaps.Map) {
+            clearInterval(checkInterval);
+            if (isMounted) initMap();
+          }
+        }, 100);
+      }
+    };
+  
+    // Загружаем API если нужно
+    if (!window.ymaps) {
+      script = document.createElement('script');
+      script.src = `https://api-maps.yandex.ru/2.1/?apikey=bbaaf96a-e8f7-4897-8ace-d6791f94450e&lang=ru_RU`;
+      script.async = true;
+      
+      script.onload = () => {
+        if (!isMounted) return;
+        // Добавляем дополнительную проверку через ready
+        window.ymaps.ready(() => {
+          if (isMounted) checkApiLoaded();
+        });
+      };
+      
+      script.onerror = () => {
+        console.error('Ошибка загрузки API Яндекс.Карт');
+        const mapContainer = document.getElementById('yandex-map');
+        if (mapContainer && isMounted) {
+          mapContainer.innerHTML = '<div class="map-error">Не удалось загрузить карту</div>';
+        }
+      };
+  
+      document.head.appendChild(script);
+    } else {
+      checkApiLoaded();
+    }
+  
+    return () => {
+      isMounted = false;
+      if (mapInstance) {
+        try {
+          mapInstance.destroy();
+        } catch (e) {
+          console.warn('Ошибка при удалении карты:', e);
+        }
+      }
+      if (script && script.parentNode) {
+        document.head.removeChild(script);
+      }
+    };
+  }, [restaurant?.address]);
 
   const groupByCategory = () => {
     return menu.reduce((acc, item) => {
@@ -392,9 +537,12 @@ const RestaurantDetailsPage = () => {
           </div>
         </div>
       </div>
+      
 
       <div className="contact-info">
+      
         <div className="info-item">
+          
           <FiMapPin />
           <span>{restaurant.address || 'Адрес не указан'}</span>
         </div>
@@ -456,7 +604,16 @@ const RestaurantDetailsPage = () => {
             ))}
           </div>
         )}
+      {restaurant.address && (
+  <div className="map-section">
+    <h2>Расположение</h2>
+    <div className="map-wrapper">
+      <div id="yandex-map"></div>
+    </div>
+  </div>
+)}      
       </div>
+      
 
       <div className="reviews-section">
         <div className="reviews-header">

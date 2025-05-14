@@ -940,3 +940,19 @@
 .star-rating:not(.read-only) .star:hover {
   color: #ffc107;
 }
+
+/* В RestaurantDetailsPage.css */
+#yandex-map {
+  width: 100% !important;
+  height: 400px !important;
+  transform: none !important;
+  position: relative !important;
+  left: 0 !important;
+  top: 0 !important;
+}
+
+.ymaps-2-1-79-map {
+  width: 100% !important;
+  height: 100% !important;
+  position: relative !important;
+}
