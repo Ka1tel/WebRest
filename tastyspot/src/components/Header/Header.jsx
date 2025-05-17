@@ -1,30 +1,33 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import './Header.css';
-import { BiSearch } from 'react-icons/bi';
-import { FiUser, FiLogOut } from 'react-icons/fi';
+import { FiUser, FiLogOut, FiSearch, FiSun, FiMoon } from 'react-icons/fi';
+import { GiCook } from 'react-icons/gi';
 
 export default function Header() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [theme, setTheme] = useState('light');
 
   useEffect(() => {
-    // Проверяем наличие данных пользователя при загрузке компонента
     const userData = localStorage.getItem('user');
-    if (userData) {
-      setUser(JSON.parse(userData));
-    }
+    if (userData) setUser(JSON.parse(userData));
+    
+    // Проверяем сохранённую тему
+    const savedTheme = localStorage.getItem('theme') || 'light';
+    setTheme(savedTheme);
+    document.documentElement.setAttribute('data-theme', savedTheme);
   }, []);
 
-  const handleSearchClick = () => {
-    const input = document.querySelector('.inputtext');
-    if (input.value.trim() === '') {
-      alert('Пожалуйста, введите поисковый запрос');
-    } else {
-      alert(`Ищем: ${input.value}`);
-      // Здесь можно добавить логику поиска
-    }
+  const toggleTheme = () => {
+    const newTheme = theme === 'light' ? 'dark' : 'light';
+    setTheme(newTheme);
+    localStorage.setItem('theme', newTheme);
+    document.documentElement.setAttribute('data-theme', newTheme);
   };
+
+  
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -35,37 +38,43 @@ export default function Header() {
 
   return (
     <header>
-      <div className='header'>
-        <Link to="/" className='LogoText'>TastySpot</Link>
+      <div className='header-container'>
+        <Link to="/" className='logo-link'>
+          <GiCook className="logo-icon" />
+          <span className="logo-text">TastySpot</span>
+        </Link>
         
-        <nav className="nav-links">
-          <Link to="/" className="nav-link">Главная</Link>
-          <Link to="/restaurants" className="nav-link">Заведения</Link>
-          <Link to="/reviews" className="nav-link">Отзывы</Link>
-          <Link to="/dishes" className="nav-link">Блюда</Link>
-          <Link to="/about" className="nav-link">О нас</Link>
+        <nav className="main-nav">
+          <Link to="/" className="nav-item">Главная</Link>
+          <Link to="/restaurants" className="nav-item">Заведения</Link>
+          <Link to="/dishes" className="nav-item">Блюда</Link>
+          <Link to="/about" className="nav-item">О нас</Link>
         </nav>
-        
-        <div className="search-container">
+
+        <div className="header-actions">
           
-          
+
+          <button className="theme-toggle" onClick={toggleTheme}>
+            {theme === 'light' ? <FiMoon /> : <FiSun />}
+          </button>
+
           {user ? (
-            <div className="user-profile">
-              <div className="avatar-container">
-                <FiUser className="user-avatar" />
+            <div className="user-menu">
+              <div className="user-greeting">Привет, {user.username}!</div>
+              <div className="user-avatar">
+                <FiUser />
               </div>
-              <span className="username">{user.username}</span>
-              <button className="logout-btn" onClick={handleLogout} title="Выйти">
+              <button className="logout-button" onClick={handleLogout}>
                 <FiLogOut />
               </button>
             </div>
           ) : (
-            <button className='SignUp' onClick={() => navigate('/login')}>
+            <button className='login-button' onClick={() => navigate('/login')}>
               Войти
             </button>
           )}
         </div>
-      </div>        
+      </div>
     </header>
   );
 }

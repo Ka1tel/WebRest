@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { FiMail, FiLock } from 'react-icons/fi';
 import axios from 'axios';
-import '../../styles/AuthStyles.css';
+import './LoginPage.css';
 import { jwtDecode } from 'jwt-decode';
 
 export default function LoginPage() {

@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { FiUser, FiMail, FiLock, FiEye, FiEyeOff } from 'react-icons/fi';
 import axios from 'axios';
 import './RegistrationPage.css';
-import "../../styles/AuthStyles.css";
+
 
 export default function RegistrationPage() {
   const [formData, setFormData] = useState({

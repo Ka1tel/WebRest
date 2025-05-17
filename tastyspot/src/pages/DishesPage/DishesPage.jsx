@@ -33,7 +33,6 @@ const DishesPage = () => {
 
         setDishes(dishesRes.data);
         
-        // Извлекаем уникальные категории и кухни из блюд
         const categories = [...new Set(dishesRes.data.map(dish => dish.category))];
         const cuisines = [...new Set(dishesRes.data.map(dish => dish.cuisine_type).filter(Boolean))];
         
@@ -51,36 +50,19 @@ const DishesPage = () => {
   }, []);
 
   const filteredDishes = dishes.filter(dish => {
-    // Поиск по названию и описанию
     const matchesSearch = dish.name.toLowerCase().includes(filters.search.toLowerCase()) || 
                         dish.description.toLowerCase().includes(filters.search.toLowerCase());
-    
-    // Фильтр по категории
     const matchesCategory = filters.category === 'all' || dish.category === filters.category;
-    
-    // Фильтр по кухне
     const matchesCuisine = filters.cuisineType === 'all' || dish.cuisine_type === filters.cuisineType;
-    
-    // Фильтр по цене
     const matchesPrice = dish.price >= filters.priceRange[0] && dish.price <= filters.priceRange[1];
-    
-    // Фильтр по весу
     const matchesWeight = dish.weight 
       ? dish.weight >= filters.weightRange[0] && dish.weight <= filters.weightRange[1]
       : true;
-    
-    // Фильтр по калориям
     const matchesCalories = dish.calories 
       ? dish.calories >= filters.caloriesRange[0] && dish.calories <= filters.caloriesRange[1]
       : true;
-    
-    // Фильтр по остроте
     const matchesSpicy = !filters.isSpicy || dish.is_spicy;
-    
-    // Фильтр по вегетарианству
     const matchesVegetarian = !filters.isVegetarian || dish.is_vegetarian;
-    
-    // Фильтр по ингредиентам
     const matchesIngredients = filters.selectedIngredients.length === 0 || 
       (dish.ingredients && filters.selectedIngredients.every(ing => dish.ingredients.includes(ing)));
 
@@ -91,6 +73,23 @@ const DishesPage = () => {
 
   const handleFilterChange = (name, value) => {
     setFilters(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleRangeChange = (type, index, value) => {
+    const numValue = parseInt(value) || 0;
+    const max = type === 'price' ? 5000 : type === 'weight' ? 1000 : 2000;
+    const clampedValue = Math.min(Math.max(numValue, 0), max);
+
+    setFilters(prev => {
+      const newRange = [...prev[`${type}Range`]];
+      newRange[index] = clampedValue;
+      
+      // Ensure min <= max
+      if (index === 0 && newRange[0] > newRange[1]) newRange[1] = newRange[0];
+      if (index === 1 && newRange[1] < newRange[0]) newRange[0] = newRange[1];
+      
+      return { ...prev, [`${type}Range`]: newRange };
+    });
   };
 
   const handleIngredientToggle = (ingredient) => {
@@ -188,16 +187,18 @@ const DishesPage = () => {
             </select>
           </div>
 
+          {/* Обновленный фильтр цены */}
           <div className="filter-group">
-            <label>Цена: {filters.priceRange[0]} - {filters.priceRange[1]} ₽</label>
-            <div className="range-slider">
+            <label>Цена (₽)</label>
+            <div className="double-range-slider">
               <input
                 type="range"
                 min="0"
                 max="5000"
                 step="100"
                 value={filters.priceRange[0]}
-                onChange={(e) => handleFilterChange('priceRange', [parseInt(e.target.value), filters.priceRange[1]])}
+                onChange={(e) => handleRangeChange('price', 0, e.target.value)}
+                className="thumb thumb--left"
               />
               <input
                 type="range"
@@ -205,51 +206,130 @@ const DishesPage = () => {
                 max="5000"
                 step="100"
                 value={filters.priceRange[1]}
-                onChange={(e) => handleFilterChange('priceRange', [filters.priceRange[0], parseInt(e.target.value)])}
+                onChange={(e) => handleRangeChange('price', 1, e.target.value)}
+                className="thumb thumb--right"
+              />
+              <div className="slider">
+                <div className="slider__track"></div>
+                <div className="slider__range" style={{
+                  left: `${(filters.priceRange[0] / 5000) * 100}%`,
+                  right: `${100 - (filters.priceRange[1] / 5000) * 100}%`
+                }}></div>
+              </div>
+            </div>
+            <div className="range-inputs">
+              <input
+                type="number"
+                min="0"
+                max="5000"
+                value={filters.priceRange[0]}
+                onChange={(e) => handleRangeChange('price', 0, e.target.value)}
+              />
+              <span>-</span>
+              <input
+                type="number"
+                min="0"
+                max="5000"
+                value={filters.priceRange[1]}
+                onChange={(e) => handleRangeChange('price', 1, e.target.value)}
               />
             </div>
           </div>
 
+          {/* Обновленный фильтр веса */}
           <div className="filter-group">
-            <label>Вес: {filters.weightRange[0]} - {filters.weightRange[1]} г</label>
-            <div className="range-slider">
+            <label>Вес (г)</label>
+            <div className="double-range-slider">
               <input
                 type="range"
                 min="0"
                 max="1000"
-                step="50"
+                step="10"
                 value={filters.weightRange[0]}
-                onChange={(e) => handleFilterChange('weightRange', [parseInt(e.target.value), filters.weightRange[1]])}
+                onChange={(e) => handleRangeChange('weight', 0, e.target.value)}
+                className="thumb thumb--left"
               />
               <input
                 type="range"
                 min="0"
                 max="1000"
-                step="50"
+                step="10"
                 value={filters.weightRange[1]}
-                onChange={(e) => handleFilterChange('weightRange', [filters.weightRange[0], parseInt(e.target.value)])}
+                onChange={(e) => handleRangeChange('weight', 1, e.target.value)}
+                className="thumb thumb--right"
+              />
+              <div className="slider">
+                <div className="slider__track"></div>
+                <div className="slider__range" style={{
+                  left: `${(filters.weightRange[0] / 1000) * 100}%`,
+                  right: `${100 - (filters.weightRange[1] / 1000) * 100}%`
+                }}></div>
+              </div>
+            </div>
+            <div className="range-inputs">
+              <input
+                type="number"
+                min="0"
+                max="1000"
+                value={filters.weightRange[0]}
+                onChange={(e) => handleRangeChange('weight', 0, e.target.value)}
+              />
+              <span>-</span>
+              <input
+                type="number"
+                min="0"
+                max="1000"
+                value={filters.weightRange[1]}
+                onChange={(e) => handleRangeChange('weight', 1, e.target.value)}
               />
             </div>
           </div>
 
+          {/* Обновленный фильтр калорий */}
           <div className="filter-group">
-            <label>Калории: {filters.caloriesRange[0]} - {filters.caloriesRange[1]} ккал</label>
-            <div className="range-slider">
+            <label>Калории (ккал)</label>
+            <div className="double-range-slider">
               <input
                 type="range"
                 min="0"
                 max="2000"
-                step="50"
+                step="10"
                 value={filters.caloriesRange[0]}
-                onChange={(e) => handleFilterChange('caloriesRange', [parseInt(e.target.value), filters.caloriesRange[1]])}
+                onChange={(e) => handleRangeChange('calories', 0, e.target.value)}
+                className="thumb thumb--left"
               />
               <input
                 type="range"
                 min="0"
                 max="2000"
-                step="50"
+                step="10"
                 value={filters.caloriesRange[1]}
-                onChange={(e) => handleFilterChange('caloriesRange', [filters.caloriesRange[0], parseInt(e.target.value)])}
+                onChange={(e) => handleRangeChange('calories', 1, e.target.value)}
+                className="thumb thumb--right"
+              />
+              <div className="slider">
+                <div className="slider__track"></div>
+                <div className="slider__range" style={{
+                  left: `${(filters.caloriesRange[0] / 2000) * 100}%`,
+                  right: `${100 - (filters.caloriesRange[1] / 2000) * 100}%`
+                }}></div>
+              </div>
+            </div>
+            <div className="range-inputs">
+              <input
+                type="number"
+                min="0"
+                max="2000"
+                value={filters.caloriesRange[0]}
+                onChange={(e) => handleRangeChange('calories', 0, e.target.value)}
+              />
+              <span>-</span>
+              <input
+                type="number"
+                min="0"
+                max="2000"
+                value={filters.caloriesRange[1]}
+                onChange={(e) => handleRangeChange('calories', 1, e.target.value)}
               />
             </div>
           </div>
@@ -297,6 +377,10 @@ const DishesPage = () => {
     </div>
   );
 };
+
+
+
+
 
 const LoadingSpinner = () => (
   <div className="loading-spinner">

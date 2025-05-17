@@ -1,51 +1,88 @@
-/* Основные стили */
-.restaurants-container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
-  font-family: 'Montserrat', sans-serif;
-  color: #333;
+:root {
+  --primary: #ff4d4d;
+  --primary-light: #ff6b6b;
+  --dark: #1a1a1a;
+  --light: #ffffff;
+  --gray: #f5f5f5;
+  --text-dark: #333;
+  --text-light: #777;
+  --card-bg: #ffffff;
+  --section-bg: #f9f9f9;
+  --border-color: rgba(0, 0, 0, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
 }
 
-/* Шапка */
-.restaurants-header {
-  margin-bottom: 30px;
+[data-theme="dark"] {
+  --primary: #ff6b6b;
+  --primary-light: #ff8e8e;
+  --dark: #f5f5f5;
+  --light: #1a1a1a;
+  --gray: #2d2d2d;
+  --text-dark: #f5f5f5;
+  --text-light: #aaa;
+  --card-bg: #1e1e1e;
+  --section-bg: #121212;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
 }
 
-.page-title {
-  font-size: 28px;
-  font-weight: 700;
-  color: #1C1C1C;
-  margin-bottom: 25px;
-  text-align: center;
-  text-transform: uppercase;
-}
-
-/* Панель управления */
-.controls {
-  display: flex;
-  gap: 15px;
-  margin-bottom: 30px;
-  flex-wrap: wrap;
-}
-
-.search-bar {
-  flex: 1;
-  min-width: 300px;
+.restaurants-page {
   position: relative;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
-.search-bar input {
-  width: 100%;
-  padding: 12px 15px 12px 40px;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  font-size: 16px;
-  background-color: #F5F5F5;
+.restaurants-hero {
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+  width: 100vw;
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
+              url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  background-size: cover;
+  background-position: center;
+  height: 300px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: white;
+  margin-bottom: 3rem;
 }
 
-.search-bar input::placeholder {
-  color: #999;
+/* Обновите основной контейнер */
+.restaurants-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 2rem 4rem;
+  width: 100%; /* Добавьте это */
+}
+
+.hero-content h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.hero-content p {
+  font-size: 1.2rem;
+  opacity: 0.9;
+}
+
+
+
+.search-section {
+  margin-bottom: 1.5rem;
+}
+
+.search-bar-container {
+  position: relative;
+  max-width: 600px;
+  margin: 0 auto;
 }
 
 .search-icon {
@@ -53,97 +90,196 @@
   left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  color: #999;
+  color: var(--text-light);
 }
 
-.type-filter {
-  padding: 12px 15px;
-  border: 1px solid #E0E0E0;
-  border-radius: 8px;
-  font-size: 16px;
-  background-color: #F5F5F5;
-  color: #333;
-  min-width: 200px;
+.search-input {
+  width: 100%;
+  padding: 12px 20px 12px 45px;
+  border-radius: 30px;
+  border: 1px solid var(--border-color);
+  background-color: var(--card-bg);
+  color: var(--text-dark);
+  font-size: 1rem;
+  transition: var(--transition);
+  box-shadow: 0 1px 3px var(--shadow-color);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px rgba(255, 77, 77, 0.2);
+}
+
+.filters-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.filter-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 15px;
+  border-radius: 20px;
+  background: var(--section-bg);
+  border: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: var(--transition);
+  font-size: 0.9rem;
+  color: var(--text-dark);
+}
+
+.filter-pill:hover {
+  border-color: var(--primary);
+}
+
+.filter-pill.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.filter-icon {
+  font-size: 0.9rem;
+}
+
+.type-select, .rating-select {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  outline: none;
   appearance: none;
-  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 10px center;
-  background-size: 15px;
+  padding-right: 15px;
 }
 
-/* Сетка ресторанов */
-.restaurants-list {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
+.restaurants-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
 }
 
-.restaurant-item {
-  display: flex;
-  gap: 20px;
-  padding: 20px;
-  border-radius: 12px;
-  background-color: rgb(65, 65, 65);
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-}
-
-.rating-container {
+.loading-spinner {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-width: 60px;
+  height: 300px;
 }
 
-.rating-value {
-  font-size: 20px;
-  font-weight: 700;
-  color: #1C1C1C;
+.spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 77, 77, 0.2);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
 }
 
-.restaurant-content {
-  flex: 1;
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
-.restaurant-name {
-  font-size: 18px;
-  font-weight: 700;
-  color: #1C1C1C;
-  margin-bottom: 5px;
+.error-message {
+  text-align: center;
+  padding: 3rem;
+  background: rgba(255, 77, 77, 0.1);
+  border-radius: 8px;
+  max-width: 600px;
+  margin: 2rem auto;
 }
 
-.restaurant-type {
-  font-size: 14px;
-  font-weight: 600;
-  color: #F5781D;
-  text-transform: uppercase;
-  margin-bottom: 8px;
+.error-message p {
+  color: var(--primary);
+  font-size: 1.1rem;
+  margin-bottom: 1.5rem;
 }
 
-.restaurant-address {
-  font-size: 14px;
-  color: #666;
+.error-message button {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: var(--transition);
 }
 
-/* Адаптивность */
+.error-message button:hover {
+  background: #ff2d2d;
+  transform: translateY(-2px);
+}
+
+.no-results {
+  text-align: center;
+  padding: 4rem 0;
+  grid-column: 1 / -1;
+}
+
+.no-results-icon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.no-results h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+}
+
+.no-results p {
+  color: var(--text-light);
+}
+
 @media (max-width: 768px) {
-  .restaurant-item {
-    flex-direction: column;
-    gap: 15px;
+  .restaurants-hero {
+    height: 200px;
   }
   
-  .rating-container {
-    flex-direction: row;
-    justify-content: flex-start;
-    gap: 15px;
+  .hero-content h1 {
+    font-size: 2rem;
   }
   
-  .controls {
-    flex-direction: column;
+  .hero-content p {
+    font-size: 1rem;
   }
   
-  .search-bar,
-  .type-filter {
-    width: 100%;
+  .restaurants-container {
+    padding: 0 1rem 2rem;
   }
+  
+  .filters-row {
+    gap: 8px;
+  }
+  
+  .filter-pill {
+    padding: 6px 12px;
+    font-size: 0.8rem;
+  }
+  
+  .restaurants-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+
+/* Для выпадающих списков */
+select {
+  background-color: var(--card-bg);
+  color: var(--text-dark);
+  border: none;
+  outline: none;
+  cursor: pointer;
+}
+
+select option {
+  background-color: var(--card-bg);
+  color: var(--text-dark);
 }

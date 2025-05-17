@@ -1,51 +1,87 @@
 import React from 'react';
 import './Footer.css';
-import { FaInstagram, FaFacebook, FaTwitter } from 'react-icons/fa';
+import { FaInstagram, FaFacebook, FaTwitter, FaYoutube, FaPinterest, FaMapMarkerAlt, FaClock, FaPhone, FaEnvelope, FaUtensils } from 'react-icons/fa';
 
 const Footer = () => {
   return (
     <footer className="footer">
+      <div className="footer-wave"></div>
       <div className="footer-container">
-        {/* Блок с копирайтом */}
+        {/* Лого и описание */}
         <div className="footer-section">
-          <p className="copyright">© TastySpot 2025</p>
-          <p>Все права защищены</p>
-          <p className="privacy-link">Политика конфиденциальности</p>
+          <div className="footer-logo">
+            <FaUtensils className="logo-icon" />
+            TastySpot
+          </div>
+          <p className="footer-description">
+            Мы создаем незабываемые гастрономические впечатления с 2010 года.
+          </p>
+          <div className="footer-newsletter">
+            <input type="email" placeholder="Ваш email" className="newsletter-input" />
+            <button className="newsletter-btn">Подписаться</button>
+          </div>
         </div>
 
-        {/* Блок с адресом */}
+        {/* Контакты */}
         <div className="footer-section">
-          <h4>Адрес и время работы</h4>
-          <p>г. Минск, ул. Пушкина д. 2</p>
-          <p>пн-сб 10:00 - 18:00</p>
-          <p>воскресенье выходной</p>
+          <h4>Контакты</h4>
+          <div className="contact-item">
+            <FaMapMarkerAlt className="contact-icon" />
+            <span>г. Минск, ул. Пушкина д. 2</span>
+          </div>
+          <div className="contact-item">
+            <FaClock className="contact-icon" />
+            <span>пн-сб 10:00 - 18:00</span>
+          </div>
+          <div className="contact-item">
+            <FaPhone className="contact-icon" />
+            <span>+375 (29) 123-45-67</span>
+          </div>
+          <div className="contact-item">
+            <FaEnvelope className="contact-icon" />
+            <span>info@tastyspot.by</span>
+          </div>
         </div>
 
-        {/* Карта сайта */}
+        {/* Быстрые ссылки */}
         <div className="footer-section">
-          <h4>Карта сайта</h4>
-          <ul className="site-map">
+          <h4>Быстрые ссылки</h4>
+          <ul className="footer-links">
             <li><a href="/">Главная</a></li>
-            <li><a href="/restaurants">Наши рестораны</a></li>
+            <li><a href="/menu">Меню</a></li>
+            <li><a href="/gallery">Галерея</a></li>
             <li><a href="/about">О нас</a></li>
-            <li><a href="/contacts">Контакты</a></li>
+            <li><a href="/contact">Контакты</a></li>
           </ul>
         </div>
 
         {/* Соцсети */}
-        <div className="footer-section social-links">
-          <h4>Соцсети</h4>
+        <div className="footer-section">
+          <h4>Мы в соцсетях</h4>
           <div className="social-icons">
-            <a href="https://instagram.com" aria-label="Instagram">
-              <FaInstagram className="social-icon" />
-            </a>
-            <a href="https://facebook.com" aria-label="Facebook">
-              <FaFacebook className="social-icon" />
-            </a>
-            <a href="https://twitter.com" aria-label="Twitter">
-              <FaTwitter className="social-icon" />
-            </a>
+            <a href="#" className="social-link instagram"><FaInstagram /></a>
+            <a href="#" className="social-link facebook"><FaFacebook /></a>
+            <a href="#" className="social-link twitter"><FaTwitter /></a>
+            <a href="#" className="social-link youtube"><FaYoutube /></a>
+            <a href="#" className="social-link pinterest"><FaPinterest /></a>
           </div>
+          
+          <div className="payment-methods">
+            <h4>Способы оплаты</h4>
+            <div className="payment-icons">
+              <span className="payment-icon">Visa</span>
+              <span className="payment-icon">MasterCard</span>
+              <span className="payment-icon">Мир</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="footer-bottom">
+        <p>© {new Date().getFullYear()} TastySpot. Все права защищены.</p>
+        <div className="legal-links">
+          <a href="/privacy">Политика конфиденциальности</a>
+          <a href="/terms">Условия использования</a>
         </div>
       </div>
     </footer>

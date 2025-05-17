@@ -1,0 +1,79 @@
+.rating-filter-container {
+    background: var(--card-bg);
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    border: 1px solid var(--border-color);
+  }
+  
+  .filter-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 15px 0;
+    font-size: 1rem;
+    color: var(--text-dark);
+    font-weight: 500;
+  }
+  
+  .title-icon {
+    color: #FFC107;
+    font-size: 1.1rem;
+  }
+  
+  .stars-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  
+  .stars-group {
+    display: flex;
+    gap: 6px;
+  }
+  
+  .star-container {
+    cursor: pointer;
+    transition: all 0.2s ease;
+    padding: 5px;
+  }
+  
+  .star-container:hover {
+    transform: scale(1.2);
+  }
+  
+  .star {
+    font-size: 1.4rem;
+    color: #ddd;
+    transition: all 0.2s ease;
+  }
+  
+  .star.filled {
+    color: #FFC107;
+  }
+  
+  .rating-text {
+    font-size: 0.9rem;
+    color: var(--text-light);
+    font-weight: 500;
+    margin-top: 5px;
+  }
+  
+  /* Анимация при выборе */
+  @keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  
+  .star-container:active .star {
+    animation: pulse 0.3s ease;
+  }
+  
+  @media (max-width: 768px) {
+    .star {
+      font-size: 1.2rem;
+    }
+  }

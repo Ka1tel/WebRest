@@ -84,7 +84,7 @@ const RestaurantCards = () => {
     );
   };
 
-  // Получаем 3 ресторана для текущего слайда
+
   const visibleRestaurants = restaurants.slice(
     currentIndex, 
     Math.min(currentIndex + RESTAURANTS_PER_PAGE, restaurants.length)
@@ -124,7 +124,7 @@ const RestaurantCards = () => {
     
     <section className="restaurant-slider">
       
-      <h2 className="slider-title">Популярные заведенияпвпыпвыпывпыввпывпы</h2>
+      <h2 className="slider-title">Популярные заведения</h2>
       
       <div className="slider-container">
         <button className="nav-arrow left" onClick={prevSlide}>

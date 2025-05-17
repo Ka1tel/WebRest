@@ -1,68 +1,76 @@
-/* TypeFilter.css */
+.filter-container {
+  position: relative;
+  display: inline-block;
+  min-width: 180px;
+}
 
 .type-filter {
-    appearance: none;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    padding: 10px 35px 10px 15px;
-    border: 1px solid #e0e0e0;
-    border-radius: 8px;
-    background-color: white;
-    color: #333;
-    font-size: 14px;
-    font-family: inherit;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    background-repeat: no-repeat;
-    background-position: right 10px center;
-    background-size: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-    min-width: 160px;
-    outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  width: 100%;
+  padding: 12px 40px 12px 16px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background-color: var(--card-bg);
+  color: var(--text-dark);
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 1px 2px var(--shadow-color);
+  outline: none;
+}
+
+.type-filter:hover {
+  border-color: var(--primary-light);
+  box-shadow: 0 2px 8px var(--shadow-primary);
+}
+
+.type-filter:focus {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--shadow-primary);
+}
+
+.filter-arrow {
+  position: absolute;
+  top: 50%;
+  right: 16px;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid var(--text-light);
+  pointer-events: none;
+  transition: var(--transition);
+}
+
+.type-filter:focus + .filter-arrow {
+  border-top-color: var(--primary);
+}
+
+/* Стили для опций */
+.type-filter option {
+  padding: 10px;
+  background-color: var(--card-bg);
+  color: var(--text-dark);
+}
+
+.type-filter option:hover {
+  background-color: var(--primary-light);
+  color: var(--light);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .filter-container {
+    width: 100%;
+    min-width: auto;
   }
   
-  .type-filter:hover {
-    border-color: #b3b3b3;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  .type-filter {
+    padding: 14px 40px 14px 16px;
+    font-size: 16px;
   }
-  
-  .type-filter:focus {
-    border-color: #f7a151;
-    box-shadow: 0 0 0 2px rgba(170, 124, 72, 0.2);
-  }
-  
-  /* Стили для опций */
-  .type-filter option {
-    padding: 8px;
-    background-color: white;
-    color: #333;
-  }
-  
-  .type-filter option:hover {
-    background-color: #f5f0fa;
-  }
-  
-  /* Для темной темы (опционально) */
-  @media (prefers-color-scheme: dark) {
-    .type-filter {
-      background-color: #2d2d2d;
-      color: #f0f0f0;
-      border-color: #444;
-      background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23cccccc' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
-    }
-    
-    .type-filter option {
-      background-color: #2d2d2d;
-      color: #f0f0f0;
-    }
-  }
-  
-  /* Адаптивность для мобильных устройств */
-  @media (max-width: 768px) {
-    .type-filter {
-      min-width: 100%;
-      font-size: 16px;
-      padding: 12px 40px 12px 20px;
-    }
-  }
+}

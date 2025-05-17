@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiCheck, FiRefreshCw } from 'react-icons/fi';
 import axios from 'axios';
-import '../../styles/AuthStyles.css';
+import './VerificationPage.css';
 
 export default function VerificationPage() {
   const [code, setCode] = useState('');

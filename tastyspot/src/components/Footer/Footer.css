@@ -1,85 +1,271 @@
-.footer {
-    background-color: #2d2d2d;
-    color: #ffffff;
-    padding: 40px 0;
-    margin-top: 50px;
-  }
+:root {
+  --primary: #ff6b00;
+  --primary-light: #ff9142;
+  --dark: #1a1a1a;       /* Всегда темный цвет */
+  --light: #ffffff;      /* Всегда светлый цвет */
+  --gray: #f5f5f5;
+  --text-dark: #333;
+  --text-light: #777;
+  --card-bg: #ffffff;
+  --section-bg: #f9f9f9;
+  --border-color: rgba(0, 0, 0, 0.05);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-primary: rgba(255, 107, 0, 0.2);
+  --transition: all 0.3s ease;
   
+  /* Новые переменные для футера */
+  --footer-bg: var(--dark);       /* По умолчанию темный фон */
+  --footer-text: var(--light);    /* По умолчанию светлый текст */
+  --footer-wave-color: #1a1a1a;   /* Цвет волны */
+}
+
+[data-theme="dark"] {
+  --primary: #ff9142;
+  --primary-light: #ffaa6b;
+  --text-dark: #f5f5f5;
+  --text-light: #aaa;
+  --card-bg: #1e1e1e;
+  --section-bg: #121212;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-primary: rgba(255, 145, 66, 0.3);
+  
+  /* Инвертируем футер для темной темы */
+  --footer-bg: var(--section-bg);  /* Используем цвет секции */
+  --footer-text: var(--text-dark);
+  --footer-wave-color: #121212;    /* Темный цвет волны */
+}
+
+.footer {
+  background-color: var(--footer-bg);
+  color: var(--footer-text);
+  padding: 4rem 0 0;
+  position: relative;
+  margin-top: 5rem;
+}
+
+.footer-wave {
+  position: absolute;
+  top: -30px;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="%231a1a1a" opacity=".25"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" fill="%231a1a1a" opacity=".5"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%231a1a1a"/></svg>') no-repeat;
+  background-size: cover;
+}
+
+/* Остальные стили остаются прежними, но заменяем var(--dark) на var(--footer-bg) 
+   и var(--light) на var(--footer-text) где нужно */
+
+.footer-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+  padding: 0 2rem;
+}
+
+.footer-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.footer-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--light);
+}
+
+.logo-icon {
+  color: var(--primary);
+  font-size: 1.8rem;
+}
+
+.footer-description {
+  color: var(--text-light);
+  line-height: 1.6;
+}
+
+.footer-section h4 {
+  color: var(--light);
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem;
+  position: relative;
+  padding-bottom: 0.5rem;
+}
+
+.footer-section h4::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 40px;
+  height: 2px;
+  background: var(--primary);
+}
+
+.contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  color: var(--text-light);
+}
+
+.contact-icon {
+  color: var(--primary);
+  min-width: 20px;
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+}
+
+.footer-links a {
+  color: var(--text-light);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.footer-links a:hover {
+  color: var(--primary);
+  padding-left: 5px;
+}
+
+.social-icons {
+  display: flex;
+  gap: 1rem;
+}
+
+.social-link {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--light);
+  background-color: var(--gray);
+  transition: var(--transition);
+}
+
+.social-link:hover {
+  transform: translateY(-3px);
+}
+
+.instagram:hover { background-color: #E1306C; }
+.facebook:hover { background-color: #3B5998; }
+.twitter:hover { background-color: #1DA1F2; }
+.youtube:hover { background-color: #FF0000; }
+.pinterest:hover { background-color: #E60023; }
+
+.footer-newsletter {
+  display: flex;
+  margin-top: 1rem;
+}
+
+.newsletter-input {
+  flex: 1;
+  padding: 0.8rem;
+  border: none;
+  border-radius: 4px 0 0 4px;
+  background-color: var(--gray);
+  color: var(--text-dark);
+}
+
+.newsletter-input::placeholder {
+  color: var(--text-light);
+}
+
+.newsletter-btn {
+  background: var(--primary);
+  color: var(--light);
+  border: none;
+  padding: 0 1.5rem;
+  border-radius: 0 4px 4px 0;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.newsletter-btn:hover {
+  background: var(--primary-light);
+}
+
+.payment-methods {
+  margin-top: 1.5rem;
+}
+
+.payment-icons {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.payment-icon {
+  background: rgba(255,255,255,0.1);
+  padding: 0.3rem 0.6rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--text-light);
+}
+
+.footer-bottom {
+  background: rgba(0,0,0,0.2);
+  padding: 1.5rem 0;
+  margin-top: 3rem;
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--text-light);
+}
+
+.legal-links {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-top: 0.8rem;
+}
+
+.legal-links a {
+  color: var(--text-light);
+  text-decoration: none;
+  transition: var(--transition);
+}
+
+.legal-links a:hover {
+  color: var(--primary);
+}
+
+@media (max-width: 768px) {
   .footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 30px;
-    padding: 0 20px;
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
   }
   
   .footer-section {
-    display: flex;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .footer-section h4::after {
+    left: 50%;
+    transform: translateX(-50%);
+  }
+  
+  .footer-newsletter {
+    width: 100%;
+  }
+  
+  .legal-links {
     flex-direction: column;
-    gap: 10px;
+    gap: 0.5rem;
   }
-  
-  .footer-section h4 {
-    color: #f8f8f8;
-    margin-bottom: 15px;
-    font-size: 18px;
-  }
-  
-  .copyright {
-    font-weight: bold;
-    font-size: 16px;
-  }
-  
-  .privacy-link {
-    color: #6e48aa;
-    cursor: pointer;
-    text-decoration: underline;
-  }
-  
-  .site-map {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-  
-  .site-map li {
-    margin-bottom: 8px;
-  }
-  
-  .site-map a {
-    color: #cccccc;
-    text-decoration: none;
-    transition: color 0.3s;
-  }
-  
-  .site-map a:hover {
-    color: #ffffff;
-  }
-  
-  .social-icons {
-    display: flex;
-    gap: 15px;
-  }
-  
-  .social-icon {
-    font-size: 24px;
-    color: #cccccc;
-    transition: color 0.3s;
-  }
-  
-  .social-icon:hover {
-    color: #6e48aa;
-  }
-  
-  @media (max-width: 768px) {
-    .footer-container {
-      grid-template-columns: 1fr;
-      gap: 20px;
-    }
-    
-    .footer-section {
-      align-items: center;
-      text-align: center;
-    }
-  }
+}

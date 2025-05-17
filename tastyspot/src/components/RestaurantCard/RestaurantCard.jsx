@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FiStar, FiMapPin, FiClock } from 'react-icons/fi';
+import { FiStar, FiMapPin, FiClock, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import './RestaurantCard.css';
 
 const RestaurantCard = ({ restaurant }) => {
@@ -11,13 +11,14 @@ const RestaurantCard = ({ restaurant }) => {
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
   const intervalRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
+  const cardRef = useRef(null);
 
   const startSlideshow = () => {
     if (photos.length <= 1) return;
     
     intervalRef.current = setInterval(() => {
       setCurrentPhotoIndex(prev => (prev + 1) % photos.length);
-    }, 2000);
+    }, 3000);
   };
 
   const stopSlideshow = () => {
@@ -27,12 +28,26 @@ const RestaurantCard = ({ restaurant }) => {
     }
   };
 
+  const goToNextPhoto = () => {
+    setCurrentPhotoIndex(prev => (prev + 1) % photos.length);
+    resetSlideshowTimer();
+  };
+
+  const goToPrevPhoto = () => {
+    setCurrentPhotoIndex(prev => (prev - 1 + photos.length) % photos.length);
+    resetSlideshowTimer();
+  };
+
+  const resetSlideshowTimer = () => {
+    stopSlideshow();
+    if (isHovered) startSlideshow();
+  };
+
   useEffect(() => {
     if (isHovered) {
       startSlideshow();
     } else {
       stopSlideshow();
-      setCurrentPhotoIndex(0); // Сбрасываем к первому изображению
     }
 
     return stopSlideshow;
@@ -54,10 +69,11 @@ const RestaurantCard = ({ restaurant }) => {
       className="restaurant-card"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
+      ref={cardRef}
     >
       <div className="card-image-container">
         {photos.length > 0 ? (
-          <img 
+          <img
             src={photos[currentPhotoIndex]} 
             alt={restaurant.name}
             onError={handleImageError}
@@ -72,13 +88,41 @@ const RestaurantCard = ({ restaurant }) => {
         )}
 
         {photos.length > 1 && (
-          <div className="photo-counter">
-            {currentPhotoIndex + 1}/{photos.length}
-          </div>
+          <>
+            <div className="photo-counter">
+              {currentPhotoIndex + 1}/{photos.length}
+            </div>
+            <button 
+              className="nav-button prev-button"
+              onClick={(e) => {
+                e.preventDefault();
+                goToPrevPhoto();
+              }}
+              aria-label="Previous photo"
+            >
+              <FiChevronLeft />
+            </button>
+            <button 
+              className="nav-button next-button"
+              onClick={(e) => {
+                e.preventDefault();
+                goToNextPhoto();
+              }}
+              aria-label="Next photo"
+            >
+              <FiChevronRight />
+            </button>
+          </>
         )}
 
         <div className="image-overlay">
           <h3 className="restaurant-title">{restaurant.name}</h3>
+          <div className="restaurant-type">
+            <span className="type-icon">
+              {getEstablishmentIcon(restaurant.establishment_type)}
+            </span>
+            {restaurant.establishment_type}
+          </div>
         </div>
         
         <span className="rating-badge">
@@ -89,19 +133,13 @@ const RestaurantCard = ({ restaurant }) => {
 
       <div className="card-content">
         <div className="details">
-          <p className="type">
-            <span className="type-icon">
-              {getEstablishmentIcon(restaurant.establishment_type)}
-            </span>
-            {restaurant.establishment_type}
-          </p>
           <p className="address">
-            <FiMapPin className="address-icon" /> 
+            
             {restaurant.address}
           </p>
           {restaurant.working_hours && (
             <p className="hours">
-              <FiClock className="hours-icon" /> 
+              
               {restaurant.working_hours}
             </p>
           )}
@@ -117,9 +155,10 @@ const getEstablishmentIcon = (type) => {
     'кафе': '☕',
     'бар': '🍸',
     'фастфуд': '🍔',
-    'кофейня': '🥐',
+    'кофейня': '🧋',
     'пиццерия': '🍕',
-    'столовая': '🍲'
+    'столовая': '🍲',
+    'суши-бар': '🍣'
   };
   return types[type?.toLowerCase()] || '🏠';
 };

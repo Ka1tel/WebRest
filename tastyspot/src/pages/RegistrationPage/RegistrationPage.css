@@ -1,60 +1,147 @@
+:root {
+  --primary: #ff6b00;
+  --primary-light: #ff9142;
+  --primary-dark: #e05a00;
+  --dark: #1a1a1a;
+  --light: #ffffff;
+  --gray: #f5f5f5;
+  --text-dark: #333;
+  --text-light: #777;
+  --card-bg: #ffffff;
+  --section-bg: #f9f9f9;
+  --border-color: rgba(0, 0, 0, 0.05);
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-primary: rgba(255, 107, 0, 0.2);
+  --transition: all 0.3s ease;
+  --radius: 12px;
+}
+
+[data-theme="dark"] {
+  --primary: #ff9142;
+  --primary-light: #ffaa6b;
+  --primary-dark: #e07d3a;
+  --dark: #f5f5f5;
+  --light: #1a1a1a;
+  --gray: #2d2d2d;
+  --text-dark: #f5f5f5;
+  --text-light: #aaa;
+  --card-bg: #1e1e1e;
+  --section-bg: #121212;
+  --border-color: rgba(255, 255, 255, 0.1);
+  --shadow-color: rgba(0, 0, 0, 0.3);
+  --shadow-primary: rgba(255, 145, 66, 0.3);
+}
+
 /* Основные стили */
 .registration-container {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   min-height: 100vh;
-  background: #121212;
-  padding: 40px 20px;
-  font-family: 'Arial', sans-serif;
-  color: #ffffff;
+  background-color: var(--section-bg);
+  padding: 2rem;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  color: var(--text-dark);
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
 }
 
+/* Анимации */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Декоративные элементы */
+.registration-container::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+  opacity: 0.1;
+  z-index: 0;
+}
+
+/* Шапка */
 .registration-header {
   text-align: center;
-  margin-bottom: 40px;
+  margin-bottom: 3rem;
+  position: relative;
+  z-index: 1;
+  animation: fadeIn 0.6s ease-out;
 }
 
 .registration-header h1 {
-  font-size: 36px;
-  font-weight: 700;
-  margin-bottom: 8px;
-  color: #ffffff;
+  font-size: 3rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: var(--primary);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  letter-spacing: 1px;
 }
 
 .registration-header p {
-  font-size: 16px;
-  color: #aaaaaa;
+  font-size: 1.1rem;
+  color: var(--text-light);
+  max-width: 500px;
+  margin: 0 auto;
+  line-height: 1.6;
 }
 
+/* Карточка регистрации */
 .registration-card {
-  background: #1e1e1e;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-  padding: 40px;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px var(--shadow-color);
+  padding: 3rem;
   width: 100%;
-  max-width: 480px;
-  border-top: 4px solid #ff6b00;
+  max-width: 500px;
+  position: relative;
+  z-index: 1;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  animation: fadeIn 0.6s ease-out 0.2s both;
+}
+
+.registration-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 5px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
 }
 
 .registration-card h2 {
-  color: #ffffff;
-  font-size: 24px;
-  margin-bottom: 8px;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
   text-align: center;
+  color: var(--text-dark);
 }
 
 .registration-card p {
-  color: #aaaaaa;
+  color: var(--text-light);
   text-align: center;
-  margin-bottom: 24px;
+  margin-bottom: 2rem;
+  font-size: 1rem;
 }
 
 /* Форма */
 .registration-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 1.5rem;
 }
 
 .input-group {
@@ -63,161 +150,292 @@
 
 .input-icon {
   position: absolute;
-  left: 16px;
+  left: 1.2rem;
   top: 50%;
   transform: translateY(-50%);
-  color: #aaaaaa;
+  color: var(--text-light);
+  font-size: 1.2rem;
+  transition: var(--transition);
 }
 
 input {
   width: 100%;
-  padding: 14px 14px 14px 44px;
-  border: 1px solid #333;
-  border-radius: 6px;
-  font-size: 16px;
-  transition: all 0.3s;
-  background: #2a2a2a;
-  color: #ffffff;
+  padding: 1rem 1rem 1rem 3.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  font-size: 1rem;
+  transition: var(--transition);
+  background: var(--card-bg);
+  color: var(--text-dark);
+  box-shadow: 0 2px 5px var(--shadow-color);
 }
 
 input::placeholder {
-  color: #666;
+  color: var(--text-light);
+  opacity: 0.7;
 }
 
 input:focus {
   outline: none;
-  border-color: #ff6b00;
-  background: #333;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--shadow-primary);
 }
 
+input:focus + .input-icon {
+  color: var(--primary);
+}
+
+/* Кнопка переключения видимости пароля */
 .password-toggle {
   position: absolute;
-  right: 16px;
+  right: 1.2rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: #aaaaaa;
+  color: var(--text-light);
   cursor: pointer;
+  font-size: 1.2rem;
+  transition: var(--transition);
+  padding: 0.5rem;
+  border-radius: 50%;
+}
+
+.password-toggle:hover {
+  color: var(--primary);
+  background: rgba(255, 107, 0, 0.1);
 }
 
 /* Кнопка отправки */
 .submit-button {
-  background: #ff6b00;
+  background: var(--primary);
   color: white;
   border: none;
-  padding: 16px;
-  border-radius: 6px;
-  font-size: 16px;
+  padding: 1.2rem;
+  border-radius: var(--radius);
+  font-size: 1rem;
   font-weight: 600;
   cursor: pointer;
-  transition: all 0.3s;
-  margin-top: 10px;
+  transition: var(--transition);
+  margin-top: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  box-shadow: 0 4px 10px var(--shadow-primary);
   text-transform: uppercase;
   letter-spacing: 1px;
 }
 
-.submit-button:hover {
-  background: #ff8c00;
+.submit-button:hover:not(:disabled) {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px var(--shadow-primary);
 }
 
 .submit-button:disabled {
-  background: #666;
+  background: var(--gray);
   cursor: not-allowed;
+  box-shadow: none;
 }
 
-/* Футер формы */
-.registration-footer {
-  margin-top: 24px;
-  text-align: center;
-  color: #aaaaaa;
-}
-
-.login-link {
-  color: #ff6b00;
-  text-decoration: none;
-  font-weight: 600;
-}
-
-.login-link:hover {
-  text-decoration: underline;
-}
-
-/* Оповещения */
-.alert {
-  padding: 12px 16px;
-  border-radius: 6px;
-  margin-bottom: 20px;
-  font-size: 14px;
-}
-
-.alert.error {
-  background: #3a1d1d;
-  color: #ff5252;
-  border: 1px solid #ff5252;
-}
-
-/* Адаптивность */
-@media (max-width: 600px) {
-  .registration-card {
-    padding: 30px 20px;
-  }
-  
-  .registration-header h1 {
-    font-size: 28px;
-  }
-  
-  .registration-card h2 {
-    font-size: 20px;
-  }
-}
-
-/* Стиль для индикатора загрузки */
+/* Индикатор загрузки */
 .spinner {
   display: inline-block;
-  width: 1rem;
-  height: 1rem;
-  border: 2px solid rgba(255, 255, 255, 0.3);
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 3px solid rgba(255, 255, 255, 0.3);
   border-radius: 50%;
   border-top-color: white;
   animation: spin 1s ease-in-out infinite;
-  margin-right: 8px;
 }
 
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
 
-/* Улучшенные стили для кнопки переключения видимости пароля */
-.password-toggle {
-  background: none;
-  border: none;
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: #666;
-  padding: 0;
+/* Оповещения об ошибках */
+.alert {
+  padding: 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  animation: fadeIn 0.3s ease-out;
 }
 
-.password-toggle:hover {
-  color: #ff6b00;
+.alert.error {
+  background: rgba(255, 71, 87, 0.1);
+  color: #ff5252;
+  border: 1px solid rgba(255, 71, 87, 0.3);
 }
 
-/* Стили для уведомления о условиях */
-.terms-notice {
-  font-size: 0.8rem;
-  color: #666;
-  margin-top: 1rem;
+/* Футер формы */
+.registration-footer {
+  margin-top: 2rem;
   text-align: center;
+  color: var(--text-light);
+  font-size: 0.95rem;
+}
+
+.login-link {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+.terms-notice {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  line-height: 1.5;
 }
 
 .terms-link {
-  color: #ff6b00;
+  color: var(--primary);
   text-decoration: none;
+  font-weight: 500;
 }
 
 .terms-link:hover {
   text-decoration: underline;
+}
+
+/* Стили для страницы подтверждения */
+.auth-container {
+  text-align: center;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 2rem;
+  background: var(--card-bg);
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px var(--shadow-color);
+  animation: fadeIn 0.6s ease-out;
+}
+
+.auth-title {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+  color: var(--primary);
+}
+
+.auth-subtitle {
+  color: var(--text-light);
+  margin-bottom: 2rem;
+  line-height: 1.6;
+}
+
+.auth-link {
+  display: inline-block;
+  padding: 1rem 2rem;
+  background: var(--primary);
+  color: white;
+  border-radius: var(--radius);
+  text-decoration: none;
+  font-weight: 600;
+  transition: var(--transition);
+  box-shadow: 0 4px 10px var(--shadow-primary);
+}
+
+.auth-link:hover {
+  background: var(--primary-dark);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 15px var(--shadow-primary);
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .registration-container {
+    padding: 1.5rem;
+  }
+  
+  .registration-header h1 {
+    font-size: 2.2rem;
+  }
+  
+  .registration-card {
+    padding: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .registration-container {
+    padding: 1rem;
+  }
+  
+  .registration-header h1 {
+    font-size: 1.8rem;
+  }
+  
+  .registration-card {
+    padding: 1.5rem;
+  }
+  
+  .registration-card h2 {
+    font-size: 1.5rem;
+  }
+  
+  input {
+    padding: 0.8rem 0.8rem 0.8rem 3rem;
+  }
+  
+  .submit-button {
+    padding: 1rem;
+  }
+}
+
+/* Креативные элементы */
+.registration-card::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, var(--primary), var(--primary-light));
+  opacity: 0;
+  transition: var(--transition);
+}
+
+.registration-card:hover::after {
+  opacity: 1;
+}
+
+/* Плавающие элементы (для анимации) */
+.floating-element {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 107, 0, 0.1);
+  z-index: 0;
+  animation: float 6s ease-in-out infinite;
+}
+
+.floating-element:nth-child(1) {
+  width: 100px;
+  height: 100px;
+  top: 20%;
+  left: 10%;
+  animation-delay: 0s;
+}
+
+.floating-element:nth-child(2) {
+  width: 150px;
+  height: 150px;
+  bottom: 15%;
+  right: 10%;
+  animation-delay: 2s;
+}
+
+.floating-element:nth-child(3) {
+  width: 70px;
+  height: 70px;
+  top: 60%;
+  left: 30%;
+  animation-delay: 4s;
 }

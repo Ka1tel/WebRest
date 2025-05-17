@@ -11,6 +11,7 @@ import AboutPage from './pages/AboutPage/AboutPage'; // Импортируем �
 import RestaurantDetailsPage from './pages/RestaurantDetailsPage/RestaurantDetailsPage';
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
 import VerificationPage from './pages/VerificationPage/VerificationPage.jsx';
+
 const router = createBrowserRouter([
   {
     path: "/",
