@@ -31,6 +31,12 @@ pool.query('SELECT NOW()', (err) => {
 // Middleware
 app.use(cors());
 app.use(express.json());
+const checkAdmin = (req, res, next) => {
+  if (!req.user.is_admin) {
+    return res.status(403).json({ error: 'Доступ запрещен. Требуются права администратора' });
+  }
+  next();
+};
 
 // Добавьте это перед роутами
 const authenticateToken = (req, res, next) => {
@@ -235,10 +241,11 @@ app.post('/api/auth/resend-code', async (req, res) => {
 app.post('/api/auth/login', async (req, res) => {
   try {
     const { email, password } = req.body;
+    
 
     // Поиск пользователя
     const { rows } = await pool.query(
-      'SELECT id, username, email, password, is_verified FROM users WHERE email = $1',
+      'SELECT id, username, email, password, is_verified, is_admin FROM users WHERE email = $1',
       [email]
     );
 
@@ -284,7 +291,8 @@ app.post('/api/auth/login', async (req, res) => {
       { 
         userId: user.id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        is_admin: user.is_admin
       },
       process.env.JWT_SECRET || 'your_jwt_secret',
       { expiresIn: '7d' }
@@ -296,7 +304,8 @@ app.post('/api/auth/login', async (req, res) => {
       user: {
         id: user.id,
         username: user.username,
-        email: user.email
+        email: user.email,
+        is_admin: user.is_admin 
       }
     });
   } catch (err) {
@@ -532,9 +541,136 @@ app.get('/api/menu', async (req, res) => {
     res.status(500).json({ error: 'Ошибка сервера при получении меню' });
   }
 });
+// Обновление ресторана
+app.put('/api/restaurants/:id', authenticateToken, checkAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { 
+      name, 
+      description, 
+      photo_url, 
+      address, 
+      establishment_type, 
+      working_hours,
+      phone,
+      latitude,
+      longitude
+    } = req.body;
 
+    const { rows } = await pool.query(
+      `UPDATE restaurants 
+       SET 
+         name = COALESCE($1, name),
+         description = COALESCE($2, description),
+         photo_url = COALESCE($3, photo_url),
+         address = COALESCE($4, address),
+         establishment_type = COALESCE($5, establishment_type),
+         working_hours = COALESCE($6, working_hours),
+         phone = COALESCE($7, phone),
+         latitude = COALESCE($8, latitude),
+         longitude = COALESCE($9, longitude),
+         updated_at = NOW()
+       WHERE id = $10
+       RETURNING *`,
+      [name, description, photo_url, address, establishment_type, working_hours, phone, latitude, longitude, id]
+    );
 
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Ресторан не найден" });
+    }
 
+    res.json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+
+// Удаление ресторана
+app.delete('/api/restaurants/:id', authenticateToken, checkAdmin, async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    const { rows } = await pool.query(
+      'DELETE FROM restaurants WHERE id = $1 RETURNING id',
+      [id]
+    );
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Ресторан не найден" });
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+// Создание ресторана (только для админов)
+app.post('/api/restaurants', authenticateToken, checkAdmin, async (req, res) => {
+  try {
+    const { 
+      name, 
+      description, 
+      photo_url, 
+      address, 
+      establishment_type, 
+      working_hours,
+      phone,
+      latitude,
+      longitude
+    } = req.body;
+
+    if (!name || !address || !establishment_type) {
+      return res.status(400).json({ error: "Необходимо указать название, адрес и тип заведения" });
+    }
+
+    const { rows } = await pool.query(
+      `INSERT INTO restaurants 
+       (name, description, photo_url, address, establishment_type, working_hours, phone, latitude, longitude)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+       RETURNING id, name, description, photo_url, address, establishment_type, working_hours, phone`,
+      [name, description, photo_url, address, establishment_type, working_hours, phone, latitude, longitude]
+    );
+
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
+// Добавление блюда в меню
+app.post('/api/dishes', authenticateToken, checkAdmin, async (req, res) => {
+  try {
+    const { 
+      restaurant_id,
+      name,
+      description,
+      price,
+      weight,
+      category,
+      photo_url,
+      cuisine_type,
+      ingredients,
+      calories,
+      is_spicy,
+      is_vegetarian
+    } = req.body;
+
+    const { rows } = await pool.query(
+      `INSERT INTO dishes 
+       (restaurant_id, name, description, price, weight, category, photo_url, cuisine_type, ingredients, calories, is_spicy, is_vegetarian)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+       RETURNING *`,
+      [restaurant_id, name, description, price, weight, category, photo_url, cuisine_type, ingredients, calories, is_spicy, is_vegetarian]
+    );
+
+    res.status(201).json(rows[0]);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Ошибка сервера' });
+  }
+});
 // Получить конкретный ресторан
 app.get('/api/restaurants/:id', async (req, res) => {
   try {

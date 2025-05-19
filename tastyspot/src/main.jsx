@@ -11,6 +11,7 @@ import AboutPage from './pages/AboutPage/AboutPage'; // Импортируем �
 import RestaurantDetailsPage from './pages/RestaurantDetailsPage/RestaurantDetailsPage';
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
 import VerificationPage from './pages/VerificationPage/VerificationPage.jsx';
+import AddRestaurantPage from './pages/AddRestaurantPage/AddRestaurantPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
       {
         path: "about", // Добавляем новый маршрут
         element: <AboutPage />,
+      },
+      {
+        path: "restaurants/add",
+        element: <AddRestaurantPage />,
       },
       
     ]

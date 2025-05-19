@@ -52,6 +52,16 @@
   color: white;
   margin-bottom: 3rem;
 }
+.distance-select {
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: inherit;
+  cursor: pointer;
+  outline: none;
+  appearance: none;
+  padding-right: 15px;
+}
 
 /* Обновите основной контейнер */
 .restaurants-container {
@@ -282,4 +292,79 @@ select {
 select option {
   background-color: var(--card-bg);
   color: var(--text-dark);
+}
+
+/* Добавляем в RestaurantsPage.css */
+
+.location-loading {
+  margin-left: 8px;
+  font-size: 0.8rem;
+  color: var(--text-light);
+  display: inline-block;
+}
+
+.location-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px;
+  background: rgba(255, 77, 77, 0.1);
+  border-radius: 8px;
+  margin: 1rem 0;
+  color: var(--primary);
+}
+
+.location-error button {
+  margin-left: auto;
+  padding: 4px 8px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.8rem;
+}
+
+.location-error button:hover {
+  background: var(--primary-light);
+}
+.add-restaurant-button {
+  background-color: #ff6b00;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  margin-left: 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-weight: 500;
+  transition: background-color 0.3s;
+}
+
+.add-restaurant-button:hover {
+  background-color: #e05d00;
+}
+/* Обновляем стили для RestaurantCard.css */
+.restaurant-card .distance-badge {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+}
+
+.location-info {
+  margin: 15px 0;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+
+.location-info a {
+  color: var(--primary);
+  text-decoration: underline;
 }
