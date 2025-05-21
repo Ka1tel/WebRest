@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import { FiStar, FiMapPin, FiClock, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiStar, FiMapPin, FiClock, FiChevronLeft, FiChevronRight, FiDollarSign, FiCoffee } from 'react-icons/fi';
 import './RestaurantCard.css';
 
 const RestaurantCard = ({ restaurant }) => {
@@ -12,6 +12,15 @@ const RestaurantCard = ({ restaurant }) => {
   const intervalRef = useRef(null);
   const [isHovered, setIsHovered] = useState(false);
   const cardRef = useRef(null);
+
+  const renderPriceRange = () => {
+    switch(restaurant.price_range) {
+      case 'low': return '₸ (эконом)';
+      case 'medium': return '₸₸ (средний)';
+      case 'high': return '₸₸₸ (премиум)';
+      default: return 'Ценовой диапазон не указан';
+    }
+  };
 
   const startSlideshow = () => {
     if (photos.length <= 1) return;
@@ -134,13 +143,28 @@ const RestaurantCard = ({ restaurant }) => {
       <div className="card-content">
         <div className="details">
           <p className="address">
-            
+            <FiMapPin className="detail-icon" />
             {restaurant.address}
           </p>
+          
           {restaurant.working_hours && (
             <p className="hours">
-              
+              <FiClock className="detail-icon" />
               {restaurant.working_hours}
+            </p>
+          )}
+          
+          {restaurant.cuisine_type && (
+            <p className="cuisine">
+              <FiCoffee className="detail-icon" />
+              {restaurant.cuisine_type}
+            </p>
+          )}
+          
+          {restaurant.price_range && (
+            <p className="price-range">
+              <FiDollarSign className="detail-icon" />
+              {renderPriceRange()}
             </p>
           )}
         </div>

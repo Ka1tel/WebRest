@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { FaSearch, FaClock, FaStar, FaUtensils, FaMapMarkerAlt, FaExclamationTriangle, FaCity } from 'react-icons/fa';
+import { FiDollarSign } from 'react-icons/fi';
 import RestaurantCard from '../../components/RestaurantCard/RestaurantCard';
 import './RestaurantsPage.css';
 import { Link } from 'react-router-dom';  // Добавьте этот импорт
@@ -62,11 +63,26 @@ const RestaurantsPage = () => {
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState(null);
   const [geocodingInProgress, setGeocodingInProgress] = useState(false);
+  const [cuisineFilter, setCuisineFilter] = useState('all');
+  const [priceRangeFilter, setPriceRangeFilter] = useState('all');
   
   const { geocodeAddress } = useGeocoding();
   const user = JSON.parse(localStorage.getItem('user'));
   const isAdmin = user?.is_admin;
   // Список городов для фильтрации
+
+  const cuisineTypes = [
+    'all', 'европейская', 'итальянская', 'азиатская', 
+    'японская', 'грузинская', 'французская', 'американская',
+    'вегетарианская', 'мексиканская', 'русская', 'белорусская'
+  ];
+
+  const priceRanges = [
+    { value: 'all', label: 'Любой' },
+    { value: 'low', label: '$ (эконом)' },
+    { value: 'medium', label: '$$ (средний)' },
+    { value: 'high', label: '$$$ (премиум)' }
+  ];
   const cities = [
     { name: "Мое местоположение", coords: null },
     { name: "Минск", coords: { lat: 53.902496, lng: 27.561481 } }, // Координаты центра Минска
@@ -242,6 +258,10 @@ const RestaurantsPage = () => {
       const matchesType = typeFilter === 'all' || restaurant.establishment_type === typeFilter;
       const matchesRating = restaurant.rating >= ratingFilter;
       const matchesOpenNow = !openNowFilter || restaurant.isOpen;
+      const matchesCuisine = cuisineFilter === 'all' || 
+        (restaurant.cuisine_type && restaurant.cuisine_type.toLowerCase().includes(cuisineFilter.toLowerCase()));
+      const matchesPriceRange = priceRangeFilter === 'all' || 
+        (restaurant.price_range && restaurant.price_range === priceRangeFilter);
       
       let matchesDistance = true;
       if (distanceFilter) {
@@ -268,9 +288,12 @@ const RestaurantsPage = () => {
         }
       }
       
-      return matchesSearch && matchesType && matchesRating && matchesOpenNow && matchesDistance;
+      return matchesSearch && matchesType && matchesRating && matchesOpenNow && 
+             matchesDistance && matchesCuisine && matchesPriceRange;
     });
-  }, [restaurants, searchTerm, typeFilter, ratingFilter, openNowFilter, distanceFilter, userLocation, selectedCity, cities, calculateDistance]);
+  }, [restaurants, searchTerm, typeFilter, ratingFilter, openNowFilter, 
+      distanceFilter, userLocation, selectedCity, cuisineFilter, priceRangeFilter, 
+      cities, calculateDistance]);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorDisplay message={error} />;
@@ -296,119 +319,127 @@ const RestaurantsPage = () => {
               className="search-input"
             />
 
-{isAdmin && (
-  <Link 
-    to="/restaurants/add" 
-    className="add-restaurant-button"
-    style={{
-      marginLeft: '15px',
-      padding: '10px 15px',
-      backgroundColor: '#ff6b00',
-      color: 'white',
-      borderRadius: '5px',
-      textDecoration: 'none',
-      fontWeight: '500',
-      transition: 'background-color 0.3s'
-    }}
-  >
-    + Добавить заведение
-  </Link>
-)}
+            {isAdmin && (
+              <Link 
+                to="/restaurants/add" 
+                className="add-restaurant-button"
+              >
+                + Добавить заведение
+              </Link>
+            )}
           </div>
         </div>
 
-        <div className="filters-row">
-          <div className="filter-pill">
-            <FaUtensils className="filter-icon" />
-            <select
-              value={typeFilter}
-              onChange={(e) => setTypeFilter(e.target.value)}
-              className="type-select"
+        <div className="filters-container">
+          <div className="filters-row">
+            <div className="filter-pill">
+              <FaUtensils className="filter-icon" />
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                className="filter-select"
+              >
+                <option value="all">Все типы</option>
+                <option value="ресторан">Рестораны</option>
+                <option value="кафе">Кафе</option>
+                <option value="бар">Бары</option>
+                <option value="фастфуд">Фастфуд</option>
+              </select>
+            </div>
+
+            <div className="filter-pill">
+              <FaUtensils className="filter-icon" />
+              <select
+                value={cuisineFilter}
+                onChange={(e) => setCuisineFilter(e.target.value)}
+                className="filter-select"
+              >
+                <option value="all">Любая кухня</option>
+                {cuisineTypes.filter(c => c !== 'all').map(cuisine => (
+                  <option key={cuisine} value={cuisine}>
+                    {cuisine.charAt(0).toUpperCase() + cuisine.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-pill">
+              <FiDollarSign className="filter-icon" />
+              <select
+                value={priceRangeFilter}
+                onChange={(e) => setPriceRangeFilter(e.target.value)}
+                className="filter-select"
+              >
+                {priceRanges.map(range => (
+                  <option key={range.value} value={range.value}>
+                    {range.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-pill">
+              <FaCity className="filter-icon" />
+              <select
+                value={selectedCity}
+                onChange={(e) => setSelectedCity(e.target.value)}
+                className="filter-select"
+              >
+                {cities.map(city => (
+                  <option key={city.name} value={city.name}>
+                    {city.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            <div className="filter-pill">
+              <FaMapMarkerAlt className="filter-icon" />
+              <select
+                value={distanceFilter || ''}
+                onChange={(e) => setDistanceFilter(e.target.value ? Number(e.target.value) : null)}
+                className="filter-select"
+                disabled={!selectedCity || (selectedCity === "Мое местоположение" && !userLocation)}
+              >
+                <option value="">Любое расстояние</option>
+                <option value="1">До 1 км</option>
+                <option value="3">До 3 км</option>
+                <option value="5">До 5 км</option>
+                <option value="10">До 10 км</option>
+              </select>
+            </div>
+
+            <div className="filter-pill">
+              <FaStar className="filter-icon" />
+              <select
+                value={ratingFilter}
+                onChange={(e) => setRatingFilter(Number(e.target.value))}
+                className="filter-select"
+              >
+                <option value="0">Любой рейтинг</option>
+                <option value="3">3+ ★</option>
+                <option value="4">4+ ★</option>
+                <option value="5">5 ★</option>
+              </select>
+            </div>
+
+            <button
+              className={`filter-pill ${openNowFilter ? 'active' : ''}`}
+              onClick={() => setOpenNowFilter(!openNowFilter)}
             >
-              <option value="all">Все типы</option>
-              <option value="ресторан">Рестораны</option>
-              <option value="кафе">Кафе</option>
-              <option value="бар">Бары</option>
-              <option value="фастфуд">Фастфуд</option>
-            </select>
+              <FaClock className="filter-icon" />
+              <span>Открыто сейчас</span>
+            </button>
           </div>
 
-          <div className="filter-pill">
-            <FaCity className="filter-icon" />
-            <select
-              value={selectedCity}
-              onChange={(e) => setSelectedCity(e.target.value)}
-              className="city-select"
-            >
-              {cities.map(city => (
-                <option key={city.name} value={city.name}>
-                  {city.name}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          <div className="filter-pill">
-            <FaMapMarkerAlt className="filter-icon" />
-            <select
-              value={distanceFilter || ''}
-              onChange={(e) => setDistanceFilter(e.target.value ? Number(e.target.value) : null)}
-              className="distance-select"
-              disabled={!selectedCity || (selectedCity === "Мое местоположение" && !userLocation)}
-            >
-              <option value="">Любое расстояние</option>
-              <option value="1">До 1 км</option>
-              <option value="3">До 3 км</option>
-              <option value="5">До 5 км</option>
-              <option value="10">До 10 км</option>
-              <option value="15">До 15 км</option>
-              
-            </select>
-            {locationLoading && <span className="location-loading">Определение местоположения...</span>}
-            {geocodingInProgress && <span className="location-loading">Обработка адресов...</span>}
-          </div>
-          {userLocation && (
-  <div className="location-info">
-    <p>Ваши координаты: {userLocation.lat.toFixed(6)}, {userLocation.lng.toFixed(6)}</p>
-    <a 
-      href={`https://www.openstreetmap.org/?mlat=${userLocation.lat}&mlon=${userLocation.lng}`}
-      target="_blank"
-      rel="noopener noreferrer"
-    >
-      Посмотреть на карте
-    </a>
-  </div>
-)}
-
-          <div className="filter-pill">
-            <FaStar className="filter-icon" />
-            <select
-              value={ratingFilter}
-              onChange={(e) => setRatingFilter(Number(e.target.value))}
-              className="rating-select"
-            >
-              <option value="0">Любой рейтинг</option>
-              <option value="3">3+ ★</option>
-              <option value="4">4+ ★</option>
-              <option value="5">5 ★</option>
-            </select>
-          </div>
-
-          <button
-            className={`filter-pill ${openNowFilter ? 'active' : ''}`}
-            onClick={() => setOpenNowFilter(!openNowFilter)}
-          >
-            <FaClock className="filter-icon" />
-            <span>Открыто сейчас</span>
-          </button>
+          
+          {locationError && (
+            <div className="location-error">
+              <FaExclamationTriangle /> {locationError}
+              <button onClick={() => window.location.reload()}>Попробовать снова</button>
+            </div>
+          )}
         </div>
-
-        {locationError && (
-          <div className="location-error">
-            <FaExclamationTriangle /> {locationError}
-            <button onClick={() => window.location.reload()}>Попробовать снова</button>
-          </div>
-        )}
 
         <RestaurantsList 
           restaurants={filteredRestaurants} 
