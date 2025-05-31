@@ -39,8 +39,8 @@ const AboutPage = () => {
             </div>
             <div className="feature-card">
               <FiHeart className="feature-icon" />
-              <h3>Избранное</h3>
-              <p>Сохраняйте понравившиеся места в персональную коллекцию</p>
+              <h3>Система оценок</h3>
+              <p>Оценивайте отзывы если считаете их полезными</p>
             </div>
             <div className="feature-card">
               <FiCheckCircle className="feature-icon" />

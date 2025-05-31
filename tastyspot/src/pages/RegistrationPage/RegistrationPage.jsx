@@ -37,6 +37,12 @@ export default function RegistrationPage() {
       setIsLoading(false);
       return;
     }
+    const passwordError = validatePassword(formData.password);
+    if (passwordError) {
+      setError(passwordError);
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const response = await axios.post('http://localhost:5000/api/auth/register', {
@@ -47,7 +53,6 @@ export default function RegistrationPage() {
 
       if (response.data.success) {
         setVerificationSent(true);
-        // Переход на страницу подтверждения
         navigate('/verify', { 
           state: { 
             email: formData.email,
@@ -60,6 +65,18 @@ export default function RegistrationPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+  const validatePassword = (password) => {
+    if (password.length < 8) {
+      return 'Пароль должен содержать не менее 8 символов.';
+    }
+    if (!/[A-Z]/.test(password)) {
+      return 'Пароль должен содержать хотя бы одну большую букву.';
+    }
+    if (!/[a-z]/.test(password)) {
+      return 'Пароль должен содержать хотя бы одну маленькую букву.';
+    }
+    return ''; 
   };
 
   const handleChange = (e) => {
@@ -76,7 +93,7 @@ export default function RegistrationPage() {
         <p className="auth-subtitle">
           Мы отправили код подтверждения на {formData.email}
         </p>
-        <Link to="/verify" className="auth-link">
+        <Link to="/verify" className="auth-link-sig">
           Перейти к подтверждению
         </Link>
       </div>
@@ -132,11 +149,11 @@ export default function RegistrationPage() {
             <input
               type={showPassword ? "text" : "password"}
               name="password"
-              placeholder="Пароль (минимум 6 символов)"
+              placeholder="Пароль (мин. 8 символов, 1 большая, 1 маленькая буква)" 
               value={formData.password}
               onChange={handleChange}
               required
-              minLength={6}
+              minLength={8}
             />
             <button 
               type="button" 
@@ -157,6 +174,7 @@ export default function RegistrationPage() {
               value={formData.confirmPassword}
               onChange={handleChange}
               required
+              minLength={8} 
             />
             <button 
               type="button" 

@@ -283,15 +283,14 @@
   text-decoration: underline;
 }
 .auth-link {
-  color: var(--primary);  /* Оранжевый цвет для ссылок */
-  text-decoration: none;
-  font-weight: 600;
-  transition: var(--transition);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  display: inline;
+  display: inline; /* или inline-block если нужно */
+  color: #ff6b00; /* Явно задаем оранжевый цвет (как в вашем --primary) */
+  font-weight: 700; /* Жирный текст (700 - это bold) */
+  text-decoration: none; /* Убираем подчеркивание */
+  font-size: inherit; /* Наследуем размер шрифта */
+  padding: 0; /* Убираем отступы */
+  background: none; /* Убираем фон */
+  border: none; /* Убираем границы */
 }
 .register-link {
   color: var(--primary); /* Оранжевый цвет */
@@ -300,7 +299,8 @@
   transition: var(--transition);
 }
 .auth-link:hover {
-  text-decoration: underline;
+  color: #e05a00; /* Темнее оранжевый при наведении (как --primary-dark) */
+  text-decoration: underline; /* Добавляем подчеркивание при наведении */
 }
 
 /* Адаптивность */

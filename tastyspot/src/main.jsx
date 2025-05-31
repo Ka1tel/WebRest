@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import App from './App';
 import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
-import RestaurantsPage from './pages/RestaurantsPage/RestaurantsPage';
+import RestaurantsPage from './pages/RestaurantsPage/RestaurantsPage.jsx';
 import ReviewsPage from './pages/ReviewsPage/ReviewsPage';
 import DishesPage from './pages/DishesPage/DishesPage';
 import MainPage from './pages/MainPage/MainPage';
@@ -12,6 +12,8 @@ import RestaurantDetailsPage from './pages/RestaurantDetailsPage/RestaurantDetai
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
 import VerificationPage from './pages/VerificationPage/VerificationPage.jsx';
 import AddRestaurantPage from './pages/AddRestaurantPage/AddRestaurantPage.jsx';
+import ProfilePage from './pages/ProfilePage/ProfilePage.jsx';
+import AdminReviewsPage from './pages/AdminReviewsPage/AdminReviewsPage.jsx';
 
 const router = createBrowserRouter([
   {
@@ -45,6 +47,14 @@ const router = createBrowserRouter([
       {
         path: "restaurants/add",
         element: <AddRestaurantPage />,
+      },
+      {
+        path: '/profile',
+        element: <ProfilePage />,
+      },
+      {
+        path: '/admin/reviews',
+        element: <AdminReviewsPage />,
       },
       
     ]

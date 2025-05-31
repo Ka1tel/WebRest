@@ -40,8 +40,8 @@
   margin-left: -50vw;
   margin-right: -50vw;
   width: 100vw;
-  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
-              url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
+  background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80');
   background-size: cover;
   background-position: center;
   height: 300px;
@@ -63,12 +63,11 @@
   padding-right: 15px;
 }
 
-/* Обновите основной контейнер */
 .restaurants-container {
   max-width: 1400px;
   margin: 0 auto;
   padding: 0 2rem 4rem;
-  width: 100%; /* Добавьте это */
+  width: 100%;
 }
 
 .hero-content h1 {
@@ -83,16 +82,18 @@
   opacity: 0.9;
 }
 
-
-
 .search-section {
   margin-bottom: 1.5rem;
 }
 
+/* === MODIFIED SECTION START === */
 .search-bar-container {
-  position: relative;
-  max-width: 600px;
+  position: relative; /* Keeps context for the absolute positioned search icon */
+  max-width: 700px; /* Increased slightly to better accommodate button, adjust as needed */
   margin: 0 auto;
+  display: flex; /* Make it a flex container */
+  align-items: center; /* Vertically align items */
+  gap: 15px; /* Space between input and button */
 }
 
 .search-icon {
@@ -101,11 +102,13 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-light);
+  z-index: 1; /* Ensure icon is above input background */
 }
 
 .search-input {
-  width: 100%;
-  padding: 12px 20px 12px 45px;
+  flex: 1; /* Make input take available space */
+  min-width: 0; /* Prevent overflow issues with flex items */
+  padding: 12px 20px 12px 45px; /* Left padding makes space for the icon */
   border-radius: 30px;
   border: 1px solid var(--border-color);
   background-color: var(--card-bg);
@@ -114,6 +117,7 @@
   transition: var(--transition);
   box-shadow: 0 1px 3px var(--shadow-color);
 }
+/* === MODIFIED SECTION END === */
 
 .search-input:focus {
   outline: none;
@@ -142,6 +146,29 @@
   font-size: 0.9rem;
   color: var(--text-dark);
 }
+.filter-select {
+  width: 100%;
+  background-color: var(--card-bg) !important; /* Принудительно применяем */
+  color: var(--text-dark);
+  border-radius: 20px; /* This might be overridden by browser default styles for select */
+  border: none; /* Added */
+  outline: none; /* Added */
+  padding: 0 5px; /* Added for some internal spacing */
+  font-size: 0.9rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+}
+[data-theme="dark"] .filter-select {
+  background-color: #121212 !important; /* Жёсткое переопределение */
+  color: var(--text-light); /* Ensure text is visible in dark mode */
+}
+[data-theme="dark"] .filter-select option {
+  background-color: #1e1e1e; /* Match dark card background */
+  color: var(--text-dark);
+}
+
 
 .filter-pill:hover {
   border-color: var(--primary);
@@ -152,11 +179,29 @@
   color: white;
   border-color: var(--primary);
 }
+.filter-pill.active .filter-select { /* Ensure select text is white when pill is active */
+    color: white;
+}
+[data-theme="dark"] .filter-pill.active .filter-select {
+    color: white; /* Still white for active pill in dark mode */
+}
+/* Style for select when pill is active in dark mode */
+[data-theme="dark"] .filter-pill.active .filter-select option {
+  background-color: #1e1e1e; /* Or your dark mode background */
+  color: var(--text-dark); /* Text color for options in dark mode dropdown */
+}
+/* Style for select when pill is active in light mode */
+.filter-pill.active .filter-select option {
+  background-color: var(--card-bg);
+  color: var(--text-dark);
+}
+
 
 .filter-icon {
   font-size: 0.9rem;
 }
 
+/* These might be redundant if .filter-select covers them */
 .type-select, .rating-select {
   background: transparent;
   border: none;
@@ -165,8 +210,9 @@
   cursor: pointer;
   outline: none;
   appearance: none;
-  padding-right: 15px;
+  padding-right: 15px; /* Check if this is needed or creates too much space with filter-select styling */
 }
+
 
 .restaurants-grid {
   display: grid;
@@ -251,36 +297,48 @@
   .restaurants-hero {
     height: 200px;
   }
-  
+
   .hero-content h1 {
     font-size: 2rem;
   }
-  
+
   .hero-content p {
     font-size: 1rem;
   }
-  
+
   .restaurants-container {
     padding: 0 1rem 2rem;
   }
-  
+
   .filters-row {
     gap: 8px;
   }
-  
+
   .filter-pill {
     padding: 6px 12px;
     font-size: 0.8rem;
   }
-  
+
   .restaurants-grid {
     grid-template-columns: 1fr;
   }
+
+  /* Adjust search bar for smaller screens if needed */
+  .search-bar-container {
+    flex-direction: column; /* Stack input and button */
+    gap: 10px; /* Adjust gap for column layout */
+    max-width: 100%; /* Allow full width */
+  }
+  .search-input {
+    width: 100%; /* Full width when stacked */
+  }
+  .add-restaurant-button {
+    width: 100%; /* Full width button when stacked */
+    text-align: center;
+  }
 }
 
-
-
-/* Для выпадающих списков */
+/* General select styling, .filter-select is more specific */
 select {
   background-color: var(--card-bg);
   color: var(--text-dark);
@@ -293,8 +351,6 @@ select option {
   background-color: var(--card-bg);
   color: var(--text-dark);
 }
-
-/* Добавляем в RestaurantsPage.css */
 
 .location-loading {
   margin-left: 8px;
@@ -328,23 +384,32 @@ select option {
 .location-error button:hover {
   background: var(--primary-light);
 }
+
+/* === MODIFIED ADD RESTAURANT BUTTON === */
 .add-restaurant-button {
   background-color: #ff6b00;
   color: white;
   border: none;
   padding: 10px 15px;
-  margin-left: 15px;
-  border-radius: 5px;
+  /* margin-left: 15px; Removed, gap on parent handles spacing */
+  border-radius: 5px; /* Consider matching search input's border-radius if desired for consistency, e.g., 30px */
   cursor: pointer;
   text-decoration: none;
   font-weight: 500;
   transition: background-color 0.3s;
+  white-space: nowrap; /* Prevent text wrapping */
+  flex-shrink: 0; /* Prevent button from shrinking */
+  height: 46.5px; /* Match search input height (padding 12+12 + line-height ~22.5 + border 1+1) approx. */
+  display: flex; /* To align text vertically if needed */
+  align-items: center; /* To align text vertically */
+  justify-content: center; /* To align text horizontally */
 }
 
 .add-restaurant-button:hover {
   background-color: #e05d00;
 }
-/* Обновляем стили для RestaurantCard.css */
+
+/* Обновляем стили для RestaurantCard.css (these are fine, just including for context) */
 .restaurant-card .distance-badge {
   position: absolute;
   top: 15px;

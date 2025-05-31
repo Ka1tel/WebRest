@@ -197,6 +197,96 @@
     opacity: 0.9;
     line-height: 1.4;
   }
+
+  /* Стили для типа кухни */
+.cuisine {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+  background-color: #f8f8f8;
+  padding: 4px 8px;
+  border-radius: 12px;
+  width: fit-content;
+}
+
+.cuisine .detail-icon {
+  font-size: 16px;
+  color: #6b4d3f;
+}
+
+/* Стили для ценового диапазона */
+.price-range {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 5px 0;
+  font-size: 14px;
+  color: #555;
+}
+
+.price-range .detail-icon {
+  font-size: 16px;
+  color: #4CAF50;
+}
+
+/* Варианты стилей для разных ценовых категорий */
+.price-range[data-range="low"] {
+  color: #388E3C; /* Зеленый для эконом */
+}
+
+.price-range[data-range="medium"] {
+  color: #FFA000; /* Оранжевый для среднего */
+}
+
+.price-range[data-range="high"] {
+  color: #D32F2F; /* Красный для премиум */
+}
+.photo-counter {
+  position: absolute;
+  top: 8px;
+  right: 8px; /* Example: move to top-right if distance is top-left */
+  background-color: rgba(0, 0, 0, 0.7);
+  color: white;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  z-index: 2;
+}
+.restaurant-card-distance-overlay {
+  position: absolute;
+  top: 8px;       /* Position in top-left corner */
+  left: 8px;
+  background-color: rgba(30, 30, 30, 0.8); /* Darker, more contrast */
+  color: white;
+  padding: 5px 10px;
+  border-radius: 16px; /* More rounded pill shape */
+  font-size: 0.8rem;
+  font-weight: 500;
+  z-index: 3; /* Above image, potentially below nav buttons if they overlap with corners */
+  display: flex;
+  align-items: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+  line-height: 1; /* Ensure icon and text align well */
+}
+
+.restaurant-card-distance-overlay .fi { /* If you use <i> or <span> for icons */
+  margin-right: 4px;
+  vertical-align: middle;
+}
+/* Общие стили для деталей */
+.details {
+  padding: 12px;
+  background: white;
+  border-radius: 0 0 8px 8px;
+}
+
+.detail-icon {
+  margin-right: 6px;
+  vertical-align: middle;
+}
   
   .address-icon, .hours-icon {
     color: var(--accent-color);

@@ -1,11 +1,28 @@
+// src/components/RestaurantCard/RestaurantCard.js
 import { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { FiStar, FiMapPin, FiClock, FiChevronLeft, FiChevronRight, FiDollarSign, FiCoffee } from 'react-icons/fi';
-import './RestaurantCard.css';
+import './RestaurantCard.css'; // Make sure your CSS supports the new overlay
 
 const RestaurantCard = ({ restaurant }) => {
-  const photos = restaurant.photo_url 
-    ? restaurant.photo_url.split(',').map(photo => photo.trim()).filter(photo => photo)
+  // Destructure props, including distance and distanceFrom
+  const {
+    id,
+    name,
+    photo_url,
+    cuisine_type,
+    rating,
+    address,
+    // isOpen, // Not directly used from props here, assumed handled by parent or derived
+    establishment_type,
+    working_hours,
+    price_range,
+    distance,       // NEW: Expected from RestaurantsPage
+    distanceFrom    // NEW: Expected from RestaurantsPage ("Мое местоположение" or city name)
+  } = restaurant;
+
+  const photos = photo_url 
+    ? photo_url.split(',').map(photo => photo.trim()).filter(photo => photo)
     : [];
   
   const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
@@ -14,10 +31,10 @@ const RestaurantCard = ({ restaurant }) => {
   const cardRef = useRef(null);
 
   const renderPriceRange = () => {
-    switch(restaurant.price_range) {
-      case 'low': return '₸ (эконом)';
-      case 'medium': return '₸₸ (средний)';
-      case 'high': return '₸₸₸ (премиум)';
+    switch(price_range) {
+      case 'эконом': return '$ (эконом)';
+      case 'средний': return '$$ (средний)';
+      case 'премиум': return '$$$ (премиум)';
       default: return 'Ценовой диапазон не указан';
     }
   };
@@ -49,37 +66,44 @@ const RestaurantCard = ({ restaurant }) => {
 
   const resetSlideshowTimer = () => {
     stopSlideshow();
-    if (isHovered) startSlideshow();
+    if (isHovered && photos.length > 1) startSlideshow(); // only restart if slideshow is active
   };
 
   useEffect(() => {
-    if (isHovered) {
+    if (isHovered && photos.length > 1) {
       startSlideshow();
     } else {
       stopSlideshow();
+      // setCurrentPhotoIndex(0); // Optionally reset to first photo on mouse leave
     }
 
     return stopSlideshow;
-  }, [isHovered, photos.length]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isHovered, photos.length]); // photos.length is important here
 
   const handleImageError = (e) => {
-    e.target.onerror = null;
-    e.target.src = '/placeholder-restaurant.jpg';
+    e.target.onerror = null; // Prevent infinite loop if placeholder also fails
+    e.target.src = '/placeholder-restaurant.jpg'; // Ensure you have this in your public folder
   };
 
-  const formatRating = (rating) => {
-    if (rating === null || isNaN(rating)) return 'Новый';
-    return Number(rating).toFixed(1);
+  const formatRating = (val) => {
+    const num = parseFloat(val);
+    if (isNaN(num) || num === 0) return 'Новый'; // Or some other indicator for no rating
+    return num.toFixed(1);
   };
+
+  // Condition to show distance from user
+  const showDistanceFromUser = distanceFrom === "Мое местоположение" && typeof distance === 'number' && distance !== null;
 
   return (
     <Link 
-      to={`/restaurants/${restaurant.id}`} 
+      to={`/restaurants/${id}`} 
       className="restaurant-card"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
       ref={cardRef}
     >
+      
       <div className="card-image-container">
         {photos.length > 0 ? (
           <img
@@ -87,6 +111,7 @@ const RestaurantCard = ({ restaurant }) => {
             alt={restaurant.name}
             onError={handleImageError}
             className={`card-image ${photos.length > 1 ? 'slideshow-active' : ''}`}
+            loading="lazy"
           />
         ) : (
           <img 
@@ -94,6 +119,14 @@ const RestaurantCard = ({ restaurant }) => {
             alt={restaurant.name}
             className="card-image"
           />
+        )}
+
+        {/* Distance Overlay - Display if applicable */}
+        {showDistanceFromUser && (
+          <div className="restaurant-card-distance-overlay">
+            <FiMapPin size={12} style={{ marginRight: '4px', verticalAlign: 'middle' }} />
+            {distance.toFixed(1)} км
+          </div>
         )}
 
         {photos.length > 1 && (
@@ -104,7 +137,7 @@ const RestaurantCard = ({ restaurant }) => {
             <button 
               className="nav-button prev-button"
               onClick={(e) => {
-                e.preventDefault();
+                e.preventDefault(); // Prevent link navigation
                 goToPrevPhoto();
               }}
               aria-label="Previous photo"
@@ -114,7 +147,7 @@ const RestaurantCard = ({ restaurant }) => {
             <button 
               className="nav-button next-button"
               onClick={(e) => {
-                e.preventDefault();
+                e.preventDefault(); // Prevent link navigation
                 goToNextPhoto();
               }}
               aria-label="Next photo"
@@ -125,18 +158,18 @@ const RestaurantCard = ({ restaurant }) => {
         )}
 
         <div className="image-overlay">
-          <h3 className="restaurant-title">{restaurant.name}</h3>
+          <h3 className="restaurant-title">{name}</h3>
           <div className="restaurant-type">
-            <span className="type-icon">
-              {getEstablishmentIcon(restaurant.establishment_type)}
+            <span className="type-icon" role="img" aria-label={establishment_type}>
+              {getEstablishmentIcon(establishment_type)}
             </span>
-            {restaurant.establishment_type}
+            {establishment_type || 'Заведение'}
           </div>
         </div>
         
         <span className="rating-badge">
           <FiStar className="rating-icon" /> 
-          {formatRating(restaurant.rating)}
+          {formatRating(rating)}
         </span>
       </div>
 
@@ -144,24 +177,24 @@ const RestaurantCard = ({ restaurant }) => {
         <div className="details">
           <p className="address">
             <FiMapPin className="detail-icon" />
-            {restaurant.address}
+            {address || 'Адрес не указан'}
           </p>
           
-          {restaurant.working_hours && (
+          {working_hours && (
             <p className="hours">
               <FiClock className="detail-icon" />
-              {restaurant.working_hours}
+              {working_hours}
             </p>
           )}
           
-          {restaurant.cuisine_type && (
+          {cuisine_type && (
             <p className="cuisine">
-              <FiCoffee className="detail-icon" />
-              {restaurant.cuisine_type}
+              <FiCoffee className="detail-icon" /> {/* FiCoffee might be for cafe, general food icon might be better */}
+              {cuisine_type}
             </p>
           )}
           
-          {restaurant.price_range && (
+          {price_range && (
             <p className="price-range">
               <FiDollarSign className="detail-icon" />
               {renderPriceRange()}
@@ -174,17 +207,18 @@ const RestaurantCard = ({ restaurant }) => {
 };
 
 const getEstablishmentIcon = (type) => {
+  const typeLower = type?.toLowerCase();
   const types = {
     'ресторан': '🍽️',
     'кафе': '☕',
     'бар': '🍸',
     'фастфуд': '🍔',
-    'кофейня': '🧋',
+    'кофейня': '🥐', // More specific for coffee shop
     'пиццерия': '🍕',
     'столовая': '🍲',
     'суши-бар': '🍣'
   };
-  return types[type?.toLowerCase()] || '🏠';
+  return types[typeLower] || '🏠'; // Default icon
 };
 
 export default RestaurantCard;

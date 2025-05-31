@@ -1,165 +1,302 @@
-/* src/pages/admin/AdminStyles.css */
-.admin-login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #f5f7fa;
-  }
+/* AddRestaurantPage.css */
+/* Предполагается, что переменные :root и [data-theme="dark"] определены глобально */
+
+.add-restaurant-container {
   
-  .admin-login-box {
-    background: white;
-    padding: 2rem;
-    border-radius: 8px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 400px;
+  max-width: 1600px; 
+  margin: 2rem auto;
+  background-color: var(--card-bg);
+  padding: 2rem; 
+  border-radius: var(--radius);
+  box-shadow: 0 10px 30px var(--shadow-color);
+  border: 1px solid var(--border-color);
+  color: var(--text-dark); 
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 2.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.page-header h1 {
+  font-size: 2.2rem; 
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+}
+
+.page-header p {
+  font-size: 1rem;
+  color: var(--text-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.error-message.alert.error {
+  /* ... стили для ошибки ... */
+  padding: 1rem;
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  font-size: 0.95rem;
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  background: rgba(255, 71, 87, 0.1);
+  color: #ff5252;
+  border: 1px solid rgba(255, 71, 87, 0.3);
+}
+
+/* Класс для обертки всего содержимого бывшей формы */
+.add-restaurant-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem; /* Отступ между блоком колонок и кнопкой отправки */
+  width: 100%; /* Занимает всю ширину .add-restaurant-container */
+}
+
+.form-layout-columns {
+  display: flex;
+  flex-direction: row; 
+  gap: 2rem; 
+  width: 100%; 
+}
+
+.form-section {
+  padding: 1.5rem; 
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  background-color: var(--light); 
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  flex-grow: 1; 
+}
+[data-theme="dark"] .form-section {
+    background-color: var(--gray); 
+}
+
+.restaurant-details-section {
+  flex-basis: 45%; 
+  min-width: 320px; 
+}
+
+.menu-details-section {
+  flex-basis: 55%; 
+  min-width: 320px;
+}
+
+.section-title-bar {
+  margin-bottom: 1.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--primary-light);
+}
+
+.section-title-bar h2 {
+  font-size: 1.4rem; 
+  font-weight: 600;
+  color: var(--text-dark);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+[data-theme="dark"] .section-title-bar h2 {
+    color: var(--text-dark);
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); 
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem; 
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-weight: 500;
+  color: var(--text-light);
+  font-size: 0.85rem; 
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+[data-theme="dark"] .form-group label {
+    color: var(--text-light);
+}
+
+.form-input,
+.form-textarea,
+select.form-input {
+  width: 100%;
+  padding: 0.75rem 0.9rem; 
+  border: 1px solid var(--border-color);
+  border-radius: calc(var(--radius) - 6px); 
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: var(--transition);
+  background: var(--light);
+  color: var(--text-dark);
+  box-shadow: inset 0 1px 2px rgba(0,0,0,0.07);
+}
+[data-theme="dark"] .form-input,
+[data-theme="dark"] .form-textarea,
+[data-theme="dark"] select.form-input {
+    background: var(--gray);
+    color: var(--text-dark);
+    border-color: #4a4a4a; 
+}
+[data-theme="dark"] .form-input::placeholder,
+[data-theme="dark"] .form-textarea::placeholder {
+    color: #888;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+select.form-input:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--shadow-primary), inset 0 1px 2px rgba(0,0,0,0.07);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 70px; 
+}
+
+/* Стили для элементов меню */
+.menu-items-container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.menu-item-card {
+  background-color: var(--card-bg); 
+  padding: 1.25rem;
+  border-radius: var(--radius);
+  border: 1px solid var(--border-color);
+  box-shadow: 0 2px 5px var(--shadow-color);
+}
+[data-theme="dark"] .menu-item-card {
+    background-color: var(--light); 
+}
+
+.menu-item-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 1px dashed #ddd; 
+}
+[data-theme="dark"] .menu-item-header {
+    border-bottom-color: #444;
+}
+
+.menu-item-header h3 {
+  font-size: 1.15rem; 
+  color: var(--primary-dark, var(--primary));
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.remove-item-button {
+  background: none;
+  border: 1px solid transparent;
+  color: var(--text-light);
+  padding: 0.3rem 0.5rem;
+  border-radius: calc(var(--radius) - 6px);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.85rem;
+}
+.remove-item-button:hover:not(:disabled) {
+  color: #ff5252; 
+  background-color: rgba(255, 82, 82, 0.08);
+  border-color: rgba(255, 82, 82, 0.15);
+}
+.remove-item-button:disabled { opacity: 0.5; cursor: not-allowed; }
+.remove-item-button svg { font-size: 1em; }
+
+.menu-item-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); 
+  gap: 1rem;
+}
+
+.checkbox-container {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 1rem; 
+  align-items: center;
+  padding-top: 0.3rem;
+}
+
+.checkbox-group { display: flex; align-items: center; }
+.checkbox-group input[type="checkbox"] {
+  margin-right: 0.4rem; width: auto; box-shadow: none;
+  accent-color: var(--primary); height: 1em; width: 1em; 
+}
+.checkbox-group label {
+  font-weight: normal; color: var(--text-dark);
+  font-size: 0.9rem; cursor: pointer;
+}
+[data-theme="dark"] .checkbox-group label { color: var(--text-dark); }
+
+.add-item-button {
+  margin-top: 1.5rem; padding: 0.7rem 1.2rem; background-color: transparent; 
+  color: var(--primary); border: 1px dashed var(--primary);
+  border-radius: var(--radius); cursor: pointer; transition: var(--transition);
+  font-weight: 500; display: inline-flex; align-items: center; gap: 0.5rem;
+}
+.add-item-button:hover {
+  background-color: var(--primary-light); color: var(--primary-dark); 
+  border-style: solid;
+}
+[data-theme="dark"] .add-item-button { color: var(--primary); border-color: var(--primary); }
+[data-theme="dark"] .add-item-button:hover { background-color: var(--primary-dark); color: var(--light); }
+
+.form-actions { margin-top: 2.5rem; text-align: center; }
+.submit-button.main-submit-button {
+  background: var(--primary); color: white; /* или var(--light) */ border: none;
+  padding: 0.9rem 2rem; border-radius: var(--radius);
+  font-size: 1rem; font-weight: 600; cursor: pointer; transition: var(--transition);
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.7rem;
+  box-shadow: 0 4px 12px var(--shadow-primary);
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+.submit-button.main-submit-button:hover:not(:disabled) {
+  background: var(--primary-dark); transform: translateY(-2px);
+  box-shadow: 0 6px 18px var(--shadow-primary);
+}
+.submit-button.main-submit-button:disabled { /* ... */ }
+[data-theme="dark"] .submit-button.main-submit-button:disabled { /* ... */ }
+
+.spinner.small-spinner { /* ... */ }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 1024px) { 
+  .form-layout-columns { flex-direction: column; }
+  .restaurant-details-section, .menu-details-section {
+    flex-basis: auto; width: 100%; min-width: unset; 
   }
-  
-  .admin-logo {
-    color: #2c3e50;
-    font-weight: bold;
-    font-size: 1.5rem;
-    display: block;
-    text-align: center;
-    margin-bottom: 1.5rem;
-  }
-  
-  .admin-input-group {
-    position: relative;
-    margin-bottom: 1rem;
-  }
-  
-  .admin-input-icon {
-    position: absolute;
-    left: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    color: #7f8c8d;
-  }
-  
-  .admin-input-group input {
-    width: 100%;
-    padding: 12px 12px 12px 40px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    font-size: 1rem;
-  }
-  
-  .admin-login-btn {
-    width: 100%;
-    padding: 12px;
-    background: #2c3e50;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: background 0.3s;
-  }
-  
-  .admin-login-btn:hover {
-    background: #1a252f;
-  }
-  
-  .admin-error {
-    color: #e74c3c;
-    margin-bottom: 1rem;
-    padding: 8px;
-    background: #fdecea;
-    border-radius: 4px;
-    text-align: center;
-  }
-  
-  /* Dashboard Styles */
-  .admin-container {
-    display: flex;
-    min-height: 100vh;
-  }
-  
-  .admin-sidebar {
-    width: 250px;
-    background: #2c3e50;
-    color: white;
-    padding: 1rem;
-  }
-  
-  .admin-sidebar nav ul {
-    list-style: none;
-    padding: 0;
-    margin-top: 2rem;
-  }
-  
-  .admin-sidebar nav li {
-    padding: 12px;
-    margin-bottom: 5px;
-    border-radius: 4px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  
-  .admin-sidebar nav li:hover {
-    background: #34495e;
-  }
-  
-  .admin-sidebar nav li.active {
-    background: #3498db;
-  }
-  
-  .admin-main {
-    flex: 1;
-    background: #f5f7fa;
-  }
-  
-  .admin-header {
-    background: white;
-    padding: 1rem;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  }
-  
-  .admin-logout {
-    display: flex;
-    align-items: center;
-    gap: 5px;
-    background: #e74c3c;
-    color: white;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-  }
-  
-  .admin-content {
-    padding: 2rem;
-  }
-  
-  .admin-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 20px;
-    margin-top: 2rem;
-  }
-  
-  .stat-card {
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    text-align: center;
-  }
-  
-  .stat-card h3 {
-    font-size: 2rem;
-    margin: 0;
-    color: #2c3e50;
-  }
-  
-  .stat-card p {
-    color: #7f8c8d;
-    margin: 0.5rem 0 0;
-  }
+}
+@media (max-width: 768px) { /* ... */ }

@@ -331,22 +331,20 @@ input:focus + .input-icon {
   line-height: 1.6;
 }
 
-.auth-link {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background: var(--primary);
-  color: white;
-  border-radius: var(--radius);
-  text-decoration: none;
-  font-weight: 600;
-  transition: var(--transition);
-  box-shadow: 0 4px 10px var(--shadow-primary);
+.auth-link-sig {
+  display: inline; /* или inline-block если нужно */
+  color: #ff6b00; /* Явно задаем оранжевый цвет (как в вашем --primary) */
+  font-weight: 700; /* Жирный текст (700 - это bold) */
+  text-decoration: none; /* Убираем подчеркивание */
+  font-size: inherit; /* Наследуем размер шрифта */
+  padding: 0; /* Убираем отступы */
+  background: none; /* Убираем фон */
+  border: none; /* Убираем границы */
 }
 
-.auth-link:hover {
-  background: var(--primary-dark);
-  transform: translateY(-2px);
-  box-shadow: 0 6px 15px var(--shadow-primary);
+.auth-link-sig:hover {
+  color: #e05a00; /* Темнее оранжевый при наведении (как --primary-dark) */
+  text-decoration: underline; /* Добавляем подчеркивание при наведении */
 }
 
 /* Адаптивность */

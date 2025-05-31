@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { FiFilter, FiSearch, FiX } from 'react-icons/fi';
+import { Link } from 'react-router-dom'; // Добавьте эту строку, если ее нет
+import { FiFilter, FiSearch, FiX, FiChevronDown } from 'react-icons/fi';
 import './DishesPage.css';
 
 const DishesPage = () => {
@@ -22,6 +23,7 @@ const DishesPage = () => {
   const [availableIngredients, setAvailableIngredients] = useState([]);
   const [availableCategories, setAvailableCategories] = useState([]);
   const [availableCuisines, setAvailableCuisines] = useState([]);
+  const [selectedDish, setSelectedDish] = useState(null); // Для хранения выбранного блюда
 
   useEffect(() => {
     const fetchData = async () => {
@@ -115,13 +117,23 @@ const DishesPage = () => {
     });
   };
 
+  const openDishModal = (dish) => {
+    setSelectedDish(dish);
+    document.body.style.overflow = 'hidden'; // Запрещаем прокрутку страницы
+  };
+
+  const closeDishModal = () => {
+    setSelectedDish(null);
+    document.body.style.overflow = 'auto'; // Возвращаем прокрутку
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <ErrorDisplay message={error} />;
 
   return (
     <div className="dishes-container">
       <div className="dishes-header">
-        <h1>Наше меню</h1>
+        <h1>Блюда</h1>
         
         <div className="controls">
           <div className="search-bar">
@@ -187,174 +199,127 @@ const DishesPage = () => {
             </select>
           </div>
 
-          {/* Обновленный фильтр цены */}
           <div className="filter-group">
-            <label>Цена (₽)</label>
-            <div className="double-range-slider">
-              <input
-                type="range"
-                min="0"
-                max="5000"
-                step="100"
-                value={filters.priceRange[0]}
-                onChange={(e) => handleRangeChange('price', 0, e.target.value)}
-                className="thumb thumb--left"
-              />
-              <input
-                type="range"
-                min="0"
-                max="5000"
-                step="100"
-                value={filters.priceRange[1]}
-                onChange={(e) => handleRangeChange('price', 1, e.target.value)}
-                className="thumb thumb--right"
-              />
-              <div className="slider">
-                <div className="slider__track"></div>
-                <div className="slider__range" style={{
-                  left: `${(filters.priceRange[0] / 5000) * 100}%`,
-                  right: `${100 - (filters.priceRange[1] / 5000) * 100}%`
-                }}></div>
-              </div>
-            </div>
-            <div className="range-inputs">
-              <input
-                type="number"
-                min="0"
-                max="5000"
-                value={filters.priceRange[0]}
-                onChange={(e) => handleRangeChange('price', 0, e.target.value)}
-              />
-              <span>-</span>
-              <input
-                type="number"
-                min="0"
-                max="5000"
-                value={filters.priceRange[1]}
-                onChange={(e) => handleRangeChange('price', 1, e.target.value)}
-              />
-            </div>
-          </div>
+  <label>Цена (₽)</label>
+  <div className="range-filters">
+    <div className="single-range-filter">
+      <label>От:</label>
+      <input
+        type="range"
+        min="0"
+        max="5000"
+        step="100"
+        value={filters.priceRange[0]}
+        onChange={(e) => handleRangeChange('price', 0, e.target.value)}
+        className="custom-slider"
+      />
+      <div className="range-value">{filters.priceRange[0]} ₽</div>
+    </div>
+    
+    <div className="single-range-filter">
+      <label>До:</label>
+      <input
+        type="range"
+        min="0"
+        max="5000"
+        step="100"
+        value={filters.priceRange[1]}
+        onChange={(e) => handleRangeChange('price', 1, e.target.value)}
+        className="custom-slider"
+      />
+      <div className="range-value">{filters.priceRange[1]} ₽</div>
+    </div>
+  </div>
+</div>
 
-          {/* Обновленный фильтр веса */}
-          <div className="filter-group">
-            <label>Вес (г)</label>
-            <div className="double-range-slider">
-              <input
-                type="range"
-                min="0"
-                max="1000"
-                step="10"
-                value={filters.weightRange[0]}
-                onChange={(e) => handleRangeChange('weight', 0, e.target.value)}
-                className="thumb thumb--left"
-              />
-              <input
-                type="range"
-                min="0"
-                max="1000"
-                step="10"
-                value={filters.weightRange[1]}
-                onChange={(e) => handleRangeChange('weight', 1, e.target.value)}
-                className="thumb thumb--right"
-              />
-              <div className="slider">
-                <div className="slider__track"></div>
-                <div className="slider__range" style={{
-                  left: `${(filters.weightRange[0] / 1000) * 100}%`,
-                  right: `${100 - (filters.weightRange[1] / 1000) * 100}%`
-                }}></div>
-              </div>
-            </div>
-            <div className="range-inputs">
-              <input
-                type="number"
-                min="0"
-                max="1000"
-                value={filters.weightRange[0]}
-                onChange={(e) => handleRangeChange('weight', 0, e.target.value)}
-              />
-              <span>-</span>
-              <input
-                type="number"
-                min="0"
-                max="1000"
-                value={filters.weightRange[1]}
-                onChange={(e) => handleRangeChange('weight', 1, e.target.value)}
-              />
-            </div>
-          </div>
+<div className="filter-group">
+  <label>Вес (г)</label>
+  <div className="range-filters">
+    <div className="single-range-filter">
+      <label>От:</label>
+      <input
+        type="range"
+        min="0"
+        max="1000"
+        step="10"
+        value={filters.weightRange[0]}
+        onChange={(e) => handleRangeChange('weight', 0, e.target.value)}
+        className="custom-slider"
+      />
+      <div className="range-value">{filters.weightRange[0]} г</div>
+    </div>
+    
+    <div className="single-range-filter">
+      <label>До:</label>
+      <input
+        type="range"
+        min="0"
+        max="1000"
+        step="10"
+        value={filters.weightRange[1]}
+        onChange={(e) => handleRangeChange('weight', 1, e.target.value)}
+        className="custom-slider"
+      />
+      <div className="range-value">{filters.weightRange[1]} г</div>
+    </div>
+  </div>
+</div>
 
-          {/* Обновленный фильтр калорий */}
-          <div className="filter-group">
-            <label>Калории (ккал)</label>
-            <div className="double-range-slider">
-              <input
-                type="range"
-                min="0"
-                max="2000"
-                step="10"
-                value={filters.caloriesRange[0]}
-                onChange={(e) => handleRangeChange('calories', 0, e.target.value)}
-                className="thumb thumb--left"
-              />
-              <input
-                type="range"
-                min="0"
-                max="2000"
-                step="10"
-                value={filters.caloriesRange[1]}
-                onChange={(e) => handleRangeChange('calories', 1, e.target.value)}
-                className="thumb thumb--right"
-              />
-              <div className="slider">
-                <div className="slider__track"></div>
-                <div className="slider__range" style={{
-                  left: `${(filters.caloriesRange[0] / 2000) * 100}%`,
-                  right: `${100 - (filters.caloriesRange[1] / 2000) * 100}%`
-                }}></div>
-              </div>
-            </div>
-            <div className="range-inputs">
-              <input
-                type="number"
-                min="0"
-                max="2000"
-                value={filters.caloriesRange[0]}
-                onChange={(e) => handleRangeChange('calories', 0, e.target.value)}
-              />
-              <span>-</span>
-              <input
-                type="number"
-                min="0"
-                max="2000"
-                value={filters.caloriesRange[1]}
-                onChange={(e) => handleRangeChange('calories', 1, e.target.value)}
-              />
-            </div>
-          </div>
+<div className="filter-group">
+  <label>Калории (ккал)</label>
+  <div className="range-filters">
+    <div className="single-range-filter">
+      <label>От:</label>
+      <input
+        type="range"
+        min="0"
+        max="2000"
+        step="10"
+        value={filters.caloriesRange[0]}
+        onChange={(e) => handleRangeChange('calories', 0, e.target.value)}
+        className="custom-slider"
+      />
+      <div className="range-value">{filters.caloriesRange[0]} ккал</div>
+    </div>
+    
+    <div className="single-range-filter">
+      <label>До:</label>
+      <input
+        type="range"
+        min="0"
+        max="2000"
+        step="10"
+        value={filters.caloriesRange[1]}
+        onChange={(e) => handleRangeChange('calories', 1, e.target.value)}
+        className="custom-slider"
+      />
+      <div className="range-value">{filters.caloriesRange[1]} ккал</div>
+    </div>
+  </div>
+</div>
+<div className="filter-group checkbox-group custom-checkbox-group"> {/* Добавим класс для общей группы */}
+  <label className="custom-checkbox-label"> {/* Класс для label */}
+    <input
+      type="checkbox"
+      checked={filters.isVegetarian}
+      onChange={() => handleFilterChange('isVegetarian', !filters.isVegetarian)}
+    />
+    <span className="custom-checkbox-checkmark"></span> {/* Наш кастомный чекбокс */}
+    <span className="custom-checkbox-text">Только вегетарианские</span> {/* Текст метки */}
+  </label>
+</div>
 
-          <div className="filter-group checkbox-group">
-            <label>
-              <input
-                type="checkbox"
-                checked={filters.isVegetarian}
-                onChange={() => handleFilterChange('isVegetarian', !filters.isVegetarian)}
-              />
-              Только вегетарианские
-            </label>
-          </div>
-
-          <div className="filter-group checkbox-group">
-            <label>
-              <input
-                type="checkbox"
-                checked={filters.isSpicy}
-                onChange={() => handleFilterChange('isSpicy', !filters.isSpicy)}
-              />
-              Только острые
-            </label>
-          </div>
+<div className="filter-group checkbox-group custom-checkbox-group">
+  <label className="custom-checkbox-label">
+    <input
+      type="checkbox"
+      checked={filters.isSpicy}
+      onChange={() => handleFilterChange('isSpicy', !filters.isSpicy)}
+    />
+    <span className="custom-checkbox-checkmark"></span>
+    <span className="custom-checkbox-text">Только острые</span>
+  </label>
+</div>
 
           <div className="filter-group">
             <label>Ингредиенты</label>
@@ -373,14 +338,114 @@ const DishesPage = () => {
         </div>
       )}
 
-      <DishesList dishes={filteredDishes} />
+      <DishesList dishes={filteredDishes} onDishClick={openDishModal} />
+      
+      {/* Модальное окно с подробной информацией о блюде */}
+      {selectedDish && (
+        <div className="dish-modal-overlay" onClick={closeDishModal}>
+          <div className="dish-modal-content" onClick={e => e.stopPropagation()}>
+            <button className="dish-modal-close" onClick={closeDishModal}>
+              <FiX />
+            </button>
+            
+            <div className="dish-modal-header">
+              <div className="dish-modal-image">
+                <img 
+                  src={selectedDish.photo_url || '/placeholder-dish.jpg'} 
+                  alt={selectedDish.name}
+                  onError={(e) => e.target.src = '/placeholder-dish.jpg'}
+                />
+              </div>
+              <div className="dish-modal-title">
+                <h2>{selectedDish.name}</h2>
+                {selectedDish.cuisine_type && (
+                  <span className="dish-modal-cuisine">{selectedDish.cuisine_type}</span>
+                )}
+                <div className="dish-modal-badges">
+                  {selectedDish.is_spicy && <span className="badge spicy-badge">Острое</span>}
+                  {selectedDish.is_vegetarian && <span className="badge veg-badge">Вегетарианское</span>}
+                </div>
+              </div>
+            </div>
+            
+            <div className="dish-modal-body">
+              <div className="dish-modal-description">
+                <h3>Описание</h3>
+                <p>{selectedDish.description || 'Нет описания'}</p>
+              </div>
+              
+              <div className="dish-modal-details">
+                <div className="detail-item">
+                  <span className="detail-label">Цена:</span>
+                  <span className="detail-value">{selectedDish.price} ₽</span>
+                </div>
+                
+                {selectedDish.weight && (
+                  <div className="detail-item">
+                    <span className="detail-label">Вес:</span>
+                    <span className="detail-value">{selectedDish.weight} г</span>
+                  </div>
+                )}
+                
+                {selectedDish.calories && (
+                  <div className="detail-item">
+                    <span className="detail-label">Калории:</span>
+                    <span className="detail-value">{selectedDish.calories} ккал</span>
+                  </div>
+                )}
+                
+                {selectedDish.category && (
+                  <div className="detail-item">
+                    <span className="detail-label">Категория:</span>
+                    <span className="detail-value">{selectedDish.category}</span>
+                  </div>
+                )}
+              </div>
+              
+              {selectedDish.ingredients?.length > 0 && (
+                <div className="dish-modal-ingredients">
+                  <h3>Ингредиенты</h3>
+                  <ul>
+                    {selectedDish.ingredients.map((ingredient, index) => (
+                      <li key={index}>{ingredient}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+              
+              {selectedDish.recipe_steps?.length > 0 && (
+                <div className="dish-modal-recipe">
+                  <h3>Рецепт приготовления</h3>
+                  <ol>
+                    {selectedDish.recipe_steps.map((step, index) => (
+                      <li key={index}>{step}</li>
+                    ))}
+                  </ol>
+                </div>
+              )}
+
+{selectedDish.restaurant_id && (
+              <div className="dish-modal-footer">
+                {/* Предполагаем, что у вас есть Link из react-router-dom */}
+                <Link 
+                  to={`/restaurants/${selectedDish.restaurant_id}`} 
+                  className="go-to-restaurant-button"
+                  onClick={closeDishModal} // Закрываем модальное окно при переходе
+                >
+                  Перейти в {selectedDish.restaurant_name || 'заведение'}
+                </Link>
+              </div>
+            )}
+              
+
+            
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-
-
-
-
 
 const LoadingSpinner = () => (
   <div className="loading-spinner">
@@ -396,7 +461,7 @@ const ErrorDisplay = ({ message }) => (
   </div>
 );
 
-const DishesList = ({ dishes }) => {
+const DishesList = ({ dishes, onDishClick }) => {
   if (dishes.length === 0) {
     return (
       <div className="no-results">
@@ -405,51 +470,155 @@ const DishesList = ({ dishes }) => {
     );
   }
 
+  // Группируем блюда по названию
+  const groupedDishes = dishes.reduce((acc, dish) => {
+    if (!acc[dish.name]) {
+      acc[dish.name] = [];
+    }
+    acc[dish.name].push(dish);
+    return acc;
+  }, {});
+
   return (
     <div className="dishes-grid">
-      {dishes.map(dish => (
-        <DishCard key={dish.id} dish={dish} />
+      {Object.entries(groupedDishes).map(([name, variants]) => (
+        <DishCardGroup 
+          key={name} 
+          name={name} 
+          variants={variants} 
+          onDishClick={onDishClick}
+        />
       ))}
     </div>
   );
 };
 
-const DishCard = ({ dish }) => {
+const DishCardGroup = ({ name, variants, onDishClick }) => {
+  const [expanded, setExpanded] = useState(false);
+  const [selectedVariant, setSelectedVariant] = useState(0);
+
+  const handleCardClick = (e) => {
+    // Если клик был по кнопке вариантов, не открываем модальное окно
+    if (e.target.closest('.variants-badge')) {
+      return;
+    }
+    onDishClick(variants[selectedVariant]);
+  };
+
+  if (variants.length === 1) {
+    return <DishCard dish={variants[0]} onClick={() => onDishClick(variants[0])} />;
+  }
+
   return (
-    <div className="dish-card">
+    <div className="dish-card-group">
+      <div 
+        className={`dish-card-wrapper ${expanded ? 'expanded' : ''}`}
+        onClick={handleCardClick}
+      >
+        <DishCard dish={variants[selectedVariant]} isGrouped />
+        <div 
+          className="variants-badge"
+          onClick={(e) => {
+            e.stopPropagation();
+            setExpanded(!expanded);
+          }}
+        >
+          <span>{variants.length} варианта</span>
+          <FiChevronDown className={`chevron ${expanded ? 'expanded' : ''}`} />
+        </div>
+      </div>
+
+      {expanded && (
+        <div className="variants-container">
+          <div className="variants-header">
+            <h4>Выберите вариант:</h4>
+            <button 
+              className="close-variants"
+              onClick={(e) => {
+                e.stopPropagation();
+                setExpanded(false);
+              }}
+            >
+              <FiX />
+            </button>
+          </div>
+          <div className="variants-grid">
+            {variants.map((variant, index) => (
+              <div 
+                key={`${name}-${index}`}
+                className={`variant-card ${selectedVariant === index ? 'selected' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedVariant(index);
+                  setExpanded(false);
+                  onDishClick(variant);
+                }}
+              >
+                <div className="variant-image">
+                  <img 
+                    src={variant.photo_url || '/placeholder-dish.jpg'} 
+                    alt={variant.name}
+                    onError={(e) => e.target.src = '/placeholder-dish.jpg'}
+                  />
+                </div>
+                <div className="variant-info">
+                  <div className="variant-price">{variant.price} ₽</div>
+                  <div className="variant-weight">{variant.weight} г</div>
+                  {variant.calories && (
+                    <div className="variant-calories">{variant.calories} ккал</div>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+const DishCard = ({ dish, isGrouped, isVariant, onClick }) => {
+  const [imgSrc, setImgSrc] = useState(dish.photo_url || '/placeholder-dish.jpg');
+
+  return (
+    <div 
+      className={`dish-card ${isVariant ? 'variant' : ''}`}
+      onClick={onClick}
+    >
       <div className="dish-image-container">
         <img 
-          src={dish.photo_url || '/placeholder-dish.jpg'} 
+          src={imgSrc}
           alt={dish.name}
-          className="dish-image"
-          onError={(e) => {
-            e.target.src = '/placeholder-dish.jpg';
-            e.target.onerror = null;
-          }}
+          onError={() => setImgSrc('/placeholder-dish.jpg')}
+          loading="lazy"
         />
-        {dish.is_spicy && <span className="spicy-badge">Острое</span>}
-        {dish.is_vegetarian && <span className="vegetarian-badge">Вегетарианское</span>}
+        {dish.is_spicy && <span className="badge spicy-badge">Острое</span>}
+        {dish.is_vegetarian && <span className="badge veg-badge">Вегетарианское</span>}
       </div>
       
       <div className="dish-content">
         <h3>{dish.name}</h3>
-        <p className="description">{dish.description}</p>
+        {dish.description && <p className="description">{dish.description}</p>}
         
         <div className="dish-meta">
-          <div className="meta-item">
+          <div className="price-tag">
             <span className="price">{dish.price} ₽</span>
             {dish.weight && <span className="weight">{dish.weight} г</span>}
-            {dish.calories && <span className="calories">{dish.calories} ккал</span>}
           </div>
           
-          <div className="meta-item">
-            {dish.cuisine_type && <span className="cuisine">{dish.cuisine_type}</span>}
-          </div>
+          {dish.cuisine_type && (
+            <div className="cuisine-tag">
+              <span>{dish.cuisine_type}</span>
+            </div>
+          )}
         </div>
 
-        {dish.ingredients && dish.ingredients.length > 0 && (
-          <div className="dish-ingredients">
-            <p>Ингредиенты: {dish.ingredients.join(', ')}</p>
+        {dish.ingredients?.length > 0 && (
+          <div className="ingredients">
+            <div className="ingredients-label">Ингредиенты:</div>
+            <div className="ingredients-list">
+              {dish.ingredients.join(', ')}
+            </div>
           </div>
         )}
       </div>
