@@ -8,7 +8,7 @@ import AddRestaurantPage from '../AddRestaurantPage/AddRestaurantPage';
 import './RestaurantsPage.css'; // Убедитесь, что путь правильный
 import { Link, useNavigate } from 'react-router-dom';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 const ALL_CITIES_OPTION = "Любой город";
 
 // --- Загрузка API Яндекс.Карт ---
@@ -20,7 +20,7 @@ const loadYmaps = () => {
     }
     const script = document.createElement('script');
     // ЗАМЕНИТЕ YOUR_YANDEX_MAPS_API_KEY НА ВАШ КЛЮЧ API ЯНДЕКС.КАРТ
-    script.src = 'https://api-maps.yandex.ru/2.1/?apikey=YOUR_YANDEX_MAPS_API_KEY&lang=ru_RU';
+    script.src = 'https://api-maps.yandex.ru/2.1/?apikey=bbaaf96a-e8f7-4897-8ace-d6791f94450e&lang=ru_RU';
     script.onload = () => {
       if (window.ymaps) {
         window.ymaps.ready(() => resolve(window.ymaps));

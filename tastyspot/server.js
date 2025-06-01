@@ -15,7 +15,7 @@ const pool = new Pool({
   host: process.env.DB_HOST, // Убрал || 'localhost' для Railway
   database: process.env.DB_NAME, // Убрал || 'tastyspot' для Railway
   port: process.env.DB_PORT, // Убрал || 5432 для Railway
-  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false, // ДОБАВЬ ЭТУ СТРОКУ ДЛЯ SSL
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false, //  ЭТУ СТРОКУ ДЛЯ SSL
 });
 pool.query('SELECT NOW()', (err) => {
   if (err) {
