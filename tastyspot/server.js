@@ -9,17 +9,14 @@ import jwt from 'jsonwebtoken';
 const { Pool } = pg;
 const app = express();
 const PORT = process.env.PORT || 5000;
-
-// Подключение к PostgreSQL
 const pool = new Pool({
-  user: process.env.DB_USER || 'postgres',
-  password: process.env.DB_PASSWORD || '228325638225',
-  host: process.env.DB_HOST || 'localhost',
-  database: process.env.DB_NAME || 'tastyspot',
-  port: process.env.DB_PORT || 5432,
+  user: process.env.DB_USER, // Убрал || 'postgres' для Railway
+  password: process.env.DB_PASSWORD, // Убрал || '228...' для Railway
+  host: process.env.DB_HOST, // Убрал || 'localhost' для Railway
+  database: process.env.DB_NAME, // Убрал || 'tastyspot' для Railway
+  port: process.env.DB_PORT, // Убрал || 5432 для Railway
+  ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false, // ДОБАВЬ ЭТУ СТРОКУ ДЛЯ SSL
 });
-
-
 pool.query('SELECT NOW()', (err) => {
   if (err) {
     console.error('Ошибка подключения к базе данных:', err);
