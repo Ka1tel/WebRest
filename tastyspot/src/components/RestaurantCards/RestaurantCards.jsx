@@ -11,6 +11,7 @@ const RestaurantCards = () => {
   const [error, setError] = useState(null);
   const RESTAURANTS_PER_PAGE = 3;
   const PLACEHOLDER_IMAGE = 'https://via.placeholder.com/300x200?text=No+Image';
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 
   // Улучшенная проверка URL изображения
   const isValidImageUrl = (url) => {
@@ -54,7 +55,7 @@ const RestaurantCards = () => {
   useEffect(() => {
     const fetchTopRatedRestaurants = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/restaurants', {
+        const response = await axios.get('${API_BASE_URL}/api/restaurants', {
           params: {
             limit: 9,
             sort: 'rating',
