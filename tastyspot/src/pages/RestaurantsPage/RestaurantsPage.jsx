@@ -1,12 +1,17 @@
+// pages/RestaurantsPage/RestaurantsPage.js
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { FaSearch, FaClock, FaStar, FaUtensils, FaMapMarkerAlt, FaExclamationTriangle, FaCity } from 'react-icons/fa';
-import { FiDollarSign, FiPlus } from 'react-icons/fi';
-import RestaurantCard from '../../components/RestaurantCard/RestaurantCard'; // Проверьте путь
-import './RestaurantsPage.css'; // Проверьте путь
-import { Link } from 'react-router-dom';
+import { FiDollarSign, FiPlus, FiAlertCircle } from 'react-icons/fi';
+import RestaurantCard from '../../components/RestaurantCard/RestaurantCard';
+import AddRestaurantPage from '../AddRestaurantPage/AddRestaurantPage';
+import './RestaurantsPage.css'; // Убедитесь, что путь правильный
+import { Link, useNavigate } from 'react-router-dom';
 
-// Загрузка API Яндекс.Карт (если используется для чего-либо)
+const API_BASE_URL = 'http://localhost:5000';
+const ALL_CITIES_OPTION = "Любой город";
+
+// --- Загрузка API Яндекс.Карт ---
 const loadYmaps = () => {
   return new Promise((resolve, reject) => {
     if (window.ymaps) {
@@ -14,45 +19,61 @@ const loadYmaps = () => {
       return;
     }
     const script = document.createElement('script');
-    script.src = 'https://api-maps.yandex.ru/2.1/?apikey=YOUR_YANDEX_MAPS_API_KEY&lang=ru_RU'; // ЗАМЕНИТЕ НА СВОЙ КЛЮЧ
+    // ЗАМЕНИТЕ YOUR_YANDEX_MAPS_API_KEY НА ВАШ КЛЮЧ API ЯНДЕКС.КАРТ
+    script.src = 'https://api-maps.yandex.ru/2.1/?apikey=YOUR_YANDEX_MAPS_API_KEY&lang=ru_RU';
     script.onload = () => {
       if (window.ymaps) {
         window.ymaps.ready(() => resolve(window.ymaps));
       } else {
-        console.error("Yandex Maps API: window.ymaps is not available after script load.");
+        console.error("[RestaurantsPage] Yandex Maps API: window.ymaps is not available after script load.");
         reject(new Error("Yandex Maps API: window.ymaps is not available after script load."));
       }
     };
     script.onerror = () => {
-        console.error("Failed to load Yandex Maps API script.");
+        console.error("[RestaurantsPage] Failed to load Yandex Maps API script.");
         reject(new Error("Failed to load Yandex Maps API script."));
     }
     document.head.appendChild(script);
   });
 };
-
-const ALL_CITIES_OPTION = "Любой город"; // Константа для опции "Любой город"
+// ---------------------------------
 
 const RestaurantsPage = () => {
-  // const [ymapsApi, setYmapsApi] = useState(null); // Раскомментируйте, если будете использовать ymaps API напрямую
-  const [uniqueCuisines, setUniqueCuisines] = useState(['all']);
+  const navigate = useNavigate();
+  // const [ymapsApi, setYmapsApi] = useState(null); // Раскомментируйте, если будете использовать ymaps API
+
   const [restaurants, setRestaurants] = useState([]);
+  const [uniqueCuisines, setUniqueCuisines] = useState(['all']);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [typeFilter, setTypeFilter] = useState('all');
   const [ratingFilter, setRatingFilter] = useState(0);
   const [openNowFilter, setOpenNowFilter] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
+  const [cuisineFilter, setCuisineFilter] = useState('all');
+  const [priceRangeFilter, setPriceRangeFilter] = useState('all');
+  const [selectedCity, setSelectedCity] = useState(ALL_CITIES_OPTION);
+
   const [userLocation, setUserLocation] = useState(null);
   const [distanceFilter, setDistanceFilter] = useState(null);
   const [locationLoading, setLocationLoading] = useState(false);
   const [locationError, setLocationError] = useState(null);
-  const [cuisineFilter, setCuisineFilter] = useState('all');
-  const [priceRangeFilter, setPriceRangeFilter] = useState('all');
   const [distanceCalculations, setDistanceCalculations] = useState({});
 
+  const [currentTime, setCurrentTime] = useState(new Date());
   const [isAdmin, setIsAdmin] = useState(false);
+
+  // useEffect для Яндекс.Карт (если нужен)
+  // useEffect(() => {
+  //   loadYmaps().then(api => {
+  //     setYmapsApi(api);
+  //     console.log('[RestaurantsPage] Yandex Maps API loaded successfully.');
+  //   }).catch(err => {
+  //     console.error('[RestaurantsPage] Failed to load Yandex Maps API:', err);
+  //   });
+  // }, []);
+
   useEffect(() => {
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
@@ -60,7 +81,7 @@ const RestaurantsPage = () => {
         const parsedUser = JSON.parse(storedUser);
         setIsAdmin(parsedUser.is_admin === true || parsedUser.role === 'admin');
       } catch (e) {
-        console.error("Error parsing user from localStorage for admin check:", e);
+        console.error("[RestaurantsPage] Error parsing user from localStorage for admin check:", e);
         setIsAdmin(false);
       }
     }
@@ -74,7 +95,7 @@ const RestaurantsPage = () => {
   ], []);
 
   const cities = useMemo(() => [
-    { name: ALL_CITIES_OPTION, coords: null }, // Опция "Любой город"
+    { name: ALL_CITIES_OPTION, coords: null },
     { name: "Мое местоположение", coords: null },
     { name: "Минск", coords: { lat: 53.902496, lng: 27.561481 } },
     { name: "Гродно", coords: { lat: 53.669353, lng: 23.813131 } },
@@ -84,23 +105,11 @@ const RestaurantsPage = () => {
     { name: "Могилев", coords: { lat: 53.900716, lng: 30.332364 } },
   ], []);
 
-  const [selectedCity, setSelectedCity] = useState(ALL_CITIES_OPTION); // По умолчанию "Любой город"
-
-  // useEffect для загрузки API Яндекс.Карт (опционально, если используется)
-  // useEffect(() => {
-  //   loadYmaps().then(api => {
-  //     setYmapsApi(api);
-  //     console.log('Yandex Maps API loaded successfully.');
-  //   }).catch(err => {
-  //     console.error('Failed to load Yandex Maps API:', err);
-  //   });
-  // }, []);
-
-  // useEffect для геолокации пользователя
   useEffect(() => {
     if (selectedCity === "Мое местоположение") {
       setLocationLoading(true);
       setLocationError(null);
+      setUserLocation(null);
       if (!navigator.geolocation) {
         setLocationError("Геолокация не поддерживается вашим браузером.");
         setLocationLoading(false);
@@ -108,6 +117,7 @@ const RestaurantsPage = () => {
       }
       navigator.geolocation.getCurrentPosition(
         (position) => {
+          console.log("[RestaurantsPage] Geolocation success:", position.coords);
           setUserLocation({
             lat: position.coords.latitude,
             lng: position.coords.longitude,
@@ -123,11 +133,11 @@ const RestaurantsPage = () => {
             case geoError.TIMEOUT: errorMessage = "Время ожидания запроса геолокации истекло."; break;
             default: errorMessage = "Произошла неизвестная ошибка при определении местоположения.";
           }
-          console.warn('Geolocation Error:', errorMessage, geoError);
+          console.warn('[RestaurantsPage] Geolocation Error:', errorMessage, geoError);
           setLocationError(errorMessage);
           setLocationLoading(false);
         },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        { enableHighAccuracy: true, timeout: 15000, maximumAge: 60000 }
       );
     } else {
       setUserLocation(null);
@@ -136,10 +146,10 @@ const RestaurantsPage = () => {
     }
   }, [selectedCity]);
 
-  const correctCuisineType = (cuisine) => {
+  const correctCuisineType = useCallback((cuisine) => {
     if (!cuisine) return '';
     return String(cuisine).toLowerCase().trim().replace('италианская', 'итальянская');
-  };
+  }, []);
 
   const checkIfOpen = useCallback((workingHours, time) => {
     if (!workingHours || typeof workingHours !== 'string') return false;
@@ -162,16 +172,13 @@ const RestaurantsPage = () => {
       const closeDateTime = new Date(time);
       closeDateTime.setHours(closeHours, closeMinutes, 0, 0);
 
-      if (closeDateTime <= openDateTime) { // Заведение работает ночью (закрывается на следующий день или в 00:00)
-        // Если текущее время больше или равно времени открытия (например, 22:00)
-        // ИЛИ текущее время меньше времени закрытия (например, 02:00 следующего дня)
+      if (closeDateTime <= openDateTime) {
         if (time >= openDateTime || time < closeDateTime) {
-             // Нужно правильно обработать переход через полночь для closeDateTime
-             if (time < closeDateTime && time.getHours() < openHours) { // Например, сейчас 01:00, открылось вчера в 22:00
+             if (time < closeDateTime && time.getHours() < openHours) {
                 openDateTime.setDate(openDateTime.getDate() - 1);
-             } else if (time >= openDateTime && time.getHours() >= openHours) { // Например, сейчас 23:00, закроется завтра в 02:00
+             } else if (time >= openDateTime && time.getHours() >= openHours) {
                 closeDateTime.setDate(closeDateTime.getDate() + 1);
-             } else { // Случай, когда время не попадает в ночной интервал (например, открыто 22-02, а сейчас 15:00)
+             } else {
                  return false;
              }
         } else {
@@ -180,24 +187,24 @@ const RestaurantsPage = () => {
       }
       return time >= openDateTime && time < closeDateTime;
     } catch (e) {
-      // console.error(`Error parsing working hours "${workingHours}":`, e.message);
+      // console.error(`[RestaurantsPage] Error parsing working hours "${workingHours}":`, e.message);
       return false;
     }
   }, []);
 
-  // useEffect для загрузки ресторанов
   useEffect(() => {
     const fetchRestaurants = async () => {
       setLoading(true);
       setError(null);
+      console.log("[RestaurantsPage] Fetching restaurants...");
       try {
-        const response = await axios.get('http://localhost:5000/api/restaurants');
+        const response = await axios.get(`${API_BASE_URL}/api/restaurants`);
         if (!Array.isArray(response.data)) {
+          console.error("[RestaurantsPage] API response is not an array:", response.data);
           setError('Ошибка: данные от API не являются списком.');
           setRestaurants([]); setLoading(false); return;
         }
-        // ЛОГ: Проверить, что приходит от API, особенно поле 'city'
-        // console.log("ДАННЫЕ ОТ API (первые 2 ресторана):", JSON.parse(JSON.stringify(response.data.slice(0, 2))));
+        console.log("[RestaurantsPage] Restaurants fetched successfully:", response.data.length, "items");
 
         const initialTime = new Date();
         const processedRestaurants = response.data.map(restaurant => ({
@@ -208,22 +215,20 @@ const RestaurantsPage = () => {
           cuisine_type: correctCuisineType(restaurant.cuisine_type),
           latitude: typeof restaurant.latitude === 'string' ? parseFloat(restaurant.latitude.replace(',', '.')) : Number(restaurant.latitude),
           longitude: typeof restaurant.longitude === 'string' ? parseFloat(restaurant.longitude.replace(',', '.')) : Number(restaurant.longitude),
-          // Убедитесь, что поле 'city' здесь есть, если оно приходит от API.
-          // Если имя поля от API другое, например 'city_name', то:
-          // city: restaurant.city_name || restaurant.city || null,
+          city: restaurant.city || null,
         }));
         
-        // console.log("ОБРАБОТАННЫЕ РЕСТОРАНЫ (первые 2, проверьте 'city'):", JSON.parse(JSON.stringify(processedRestaurants.slice(0, 2))));
         setRestaurants(processedRestaurants);
 
         const allCuisines = processedRestaurants
           .map(r => correctCuisineType(r.cuisine_type))
           .filter(Boolean);
-        setUniqueCuisines(['all', ...new Set(allCuisines)].sort());
+        setUniqueCuisines(['all', ...new Set(allCuisines)].sort((a, b) => a.localeCompare(b, 'ru')));
 
       } catch (err) {
-        console.error('Ошибка загрузки ресторанов:', err.response?.data?.message || err.message || err);
-        setError(err.response?.data?.message || err.message || 'Неизвестная ошибка загрузки.');
+        console.error('[RestaurantsPage] Error loading restaurants:', err);
+        const message = err.response?.data?.message || err.response?.data?.error || err.message || 'Неизвестная ошибка загрузки.';
+        setError(message);
         setRestaurants([]);
       } finally {
         setLoading(false);
@@ -232,9 +237,8 @@ const RestaurantsPage = () => {
     fetchRestaurants();
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
     return () => clearInterval(timer);
-  }, [checkIfOpen]);
+  }, [checkIfOpen, correctCuisineType]);
 
-  // useEffect для обновления isOpen при изменении currentTime
   useEffect(() => {
     if (restaurants.length > 0) {
       setRestaurants(prevRestaurants =>
@@ -243,16 +247,16 @@ const RestaurantsPage = () => {
     }
   }, [currentTime, checkIfOpen, restaurants.length]);
 
-
-  // Функция расчета расстояний
   const calculateDistances = useCallback(() => {
+    // console.log(`[RestaurantsPage] Calculating distances. Selected city: ${selectedCity}, User location:`, userLocation);
     let fromCoords;
     const cityDataObj = cities.find(c => c.name === selectedCity);
 
     if (selectedCity === "Мое местоположение") {
-      if (userLocation?.lat != null && userLocation?.lng != null) { // Проверка на null/undefined
+      if (userLocation?.lat != null && userLocation?.lng != null) {
         fromCoords = { lat: userLocation.lat, lng: userLocation.lng };
       } else {
+        if (!locationLoading) console.warn("[RestaurantsPage] Cannot calculate distances: User location not available yet for 'Мое местоположение'.");
         setDistanceCalculations({}); return;
       }
     } else if (cityDataObj?.coords) {
@@ -261,7 +265,11 @@ const RestaurantsPage = () => {
       setDistanceCalculations({}); return;
     }
 
-    if (!fromCoords || (!distanceFilter && selectedCity !== "Мое местоположение")) {
+    if (!fromCoords) {
+        setDistanceCalculations({}); return;
+    }
+    
+    if (selectedCity !== "Мое местоположение" && !distanceFilter) {
         setDistanceCalculations({}); return;
     }
 
@@ -279,7 +287,7 @@ const RestaurantsPage = () => {
     const newDistances = {};
     restaurants.forEach(restaurant => {
       if (restaurant.id &&
-          restaurant.latitude != null && restaurant.longitude != null && // Проверка на null/undefined
+          restaurant.latitude != null && restaurant.longitude != null &&
           !isNaN(restaurant.latitude) && !isNaN(restaurant.longitude)) {
         const dist = haversineDistance(
           fromCoords.lat, fromCoords.lng,
@@ -291,12 +299,11 @@ const RestaurantsPage = () => {
       }
     });
     setDistanceCalculations(newDistances);
-  }, [restaurants, selectedCity, cities, userLocation, distanceFilter]);
+  }, [restaurants, selectedCity, cities, userLocation, distanceFilter, locationLoading]);
 
-  // useEffect для вызова calculateDistances
   useEffect(() => {
     if (restaurants.length > 0) {
-      if (distanceFilter || selectedCity === "Мое местоположение") {
+      if (distanceFilter !== null || selectedCity === "Мое местоположение") {
         calculateDistances();
       } else {
         setDistanceCalculations({});
@@ -304,63 +311,107 @@ const RestaurantsPage = () => {
     } else {
         setDistanceCalculations({});
     }
-  }, [distanceFilter, selectedCity, userLocation, restaurants, calculateDistances]);
+  }, [distanceFilter, selectedCity, userLocation, restaurants.length, calculateDistances]);
 
+  const handleDeleteRestaurant = async (restaurantId, restaurantName) => {
+    console.log(`[RestaurantsPage] handleDeleteRestaurant called for ID: ${restaurantId}, Name: ${restaurantName}`);
+    if (!isAdmin) {
+      console.warn("[RestaurantsPage] Delete attempt by non-admin user.");
+      setError("У вас нет прав для выполнения этого действия.");
+      return;
+    }
+    if (!restaurantId) {
+      console.error("[RestaurantsPage] Restaurant ID for deletion is undefined or null.");
+      setError("Не удалось определить ID ресторана для удаления.");
+      return;
+    }
+    const confirmDelete = window.confirm(
+      `Вы уверены, что хотите удалить ресторан "${restaurantName || `ID: ${restaurantId}`}"? Это действие необратимо.`
+    );
+    if (confirmDelete) {
+      console.log(`[RestaurantsPage] User confirmed deletion for ID: ${restaurantId}`);
+      setError(null);
+      try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          setError("Ошибка авторизации: токен не найден. Пожалуйста, войдите снова.");
+          console.error("[RestaurantsPage] Auth token not found for deletion.");
+          navigate('/login');
+          return;
+        }
+        console.log(`[RestaurantsPage] Attempting to delete with token...`);
+        const response = await axios.delete(`${API_BASE_URL}/api/restaurants/${restaurantId}`, {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        console.log('[RestaurantsPage] Server response for delete:', response.data);
+        if (response.status === 200 || response.status === 204 || response.data.success) {
+          setRestaurants(prevRestaurants => {
+            const updatedRestaurants = prevRestaurants.filter(r => r.id !== restaurantId);
+            console.log(`[RestaurantsPage] Restaurants state updated. Old count: ${prevRestaurants.length}, New count: ${updatedRestaurants.length}`);
+            return updatedRestaurants;
+          });
+          setDistanceCalculations(prevDistances => {
+            const newDistances = {...prevDistances};
+            delete newDistances[restaurantId];
+            return newDistances;
+          });
+        } else {
+          const serverMessage = response.data.message || response.data.error || "Сервер вернул неожиданный ответ при удалении.";
+          setError(`Не удалось удалить ресторан: ${serverMessage}`);
+          console.error(`[RestaurantsPage] Server indicated delete failure: ${serverMessage}`, response.data);
+        }
+      } catch (err) {
+        console.error('[RestaurantsPage] Error during restaurant deletion API call:', err);
+        let errorMessage = 'Произошла ошибка при удалении ресторана.';
+        if (err.response) {
+          console.error('[RestaurantsPage] Server Error Response:', err.response.data, "Status:", err.response.status);
+          if (err.response.status === 401 || err.response.status === 403) {
+            errorMessage = err.response.data.error || "Ошибка авторизации или доступа. Попробуйте войти снова.";
+          } else {
+            errorMessage = err.response.data.message || err.response.data.error || `Ошибка сервера (${err.response.status})`;
+          }
+        } else if (err.request) {
+          console.error('[RestaurantsPage] No response received:', err.request);
+          errorMessage = 'Нет ответа от сервера. Проверьте ваше соединение.';
+        } else {
+          console.error('[RestaurantsPage] Error setting up request:', err.message);
+          errorMessage = `Ошибка при отправке запроса: ${err.message}`;
+        }
+        setError(errorMessage);
+      }
+    } else {
+      console.log(`[RestaurantsPage] User cancelled deletion for ID: ${restaurantId}`);
+    }
+  };
 
   const filteredRestaurants = useMemo(() => {
-    // console.log(`--- ФИЛЬТРАЦИЯ --- Город: "${selectedCity}", Фильтр расст.: ${distanceFilter}, Ресторанов до: ${restaurants.length}`);
-    // if(restaurants.length > 0 && restaurants[0]) console.log("Первый ресторан для фильтрации (city):", restaurants[0].city);
-
+    // console.log(`[RestaurantsPage] Filtering restaurants. Count before: ${restaurants.length}, City: "${selectedCity}", Search: "${searchTerm}"`);
     let currentRestaurants = [...restaurants];
-
-    // 1. Фильтр по ГОРОДУ
     if (selectedCity !== ALL_CITIES_OPTION && selectedCity !== "Мое местоположение") {
-      currentRestaurants = currentRestaurants.filter(restaurant => {
-        const restaurantCity = restaurant.city ? String(restaurant.city).trim().toLowerCase() : null;
-        const currentSelectedCityLower = selectedCity.trim().toLowerCase();
-        const cityMatch = restaurantCity === currentSelectedCityLower;
-        // if (restaurant.id === ID_ТЕСТОВОГО_РЕСТОРАНА) {
-        //    console.log(`  Фильтр города для "${restaurant.name}": API="${restaurant.city}" (обр:"${restaurantCity}"), Выбран="${currentSelectedCityLower}", Совпадение=${cityMatch}`);
-        // }
-        return cityMatch;
-      });
+      currentRestaurants = currentRestaurants.filter(restaurant =>
+        restaurant.city && String(restaurant.city).trim().toLowerCase() === selectedCity.trim().toLowerCase()
+      );
     }
-
-    // 2. Остальные фильтры
-    return currentRestaurants.filter(restaurant => {
-      const matchesSearch = searchTerm
-        ? String(restaurant.name).toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (restaurant.address && String(restaurant.address).toLowerCase().includes(searchTerm.toLowerCase()))
-        : true;
+    currentRestaurants = currentRestaurants.filter(restaurant => {
+      const nameMatch = String(restaurant.name || '').toLowerCase();
+      const addressMatch = String(restaurant.address || '').toLowerCase();
+      const searchTermLower = searchTerm.toLowerCase();
+      const matchesSearch = searchTerm ? nameMatch.includes(searchTermLower) || addressMatch.includes(searchTermLower) : true;
       const matchesType = typeFilter === 'all' || restaurant.establishment_type === typeFilter;
       const matchesRating = restaurant.rating >= ratingFilter;
       const matchesOpenNow = !openNowFilter || restaurant.isOpen;
-      const matchesCuisine = cuisineFilter === 'all' ||
-        (restaurant.cuisine_type && String(restaurant.cuisine_type).toLowerCase() === cuisineFilter.toLowerCase());
-      const matchesPriceRange = priceRangeFilter === 'all' ||
-        (restaurant.price_range && restaurant.price_range === priceRangeFilter);
-
+      const matchesCuisine = cuisineFilter === 'all' || (restaurant.cuisine_type && String(restaurant.cuisine_type).toLowerCase() === cuisineFilter.toLowerCase());
+      const matchesPriceRange = priceRangeFilter === 'all' || (restaurant.price_range && restaurant.price_range === priceRangeFilter);
       let matchesDistance = true;
-      if (distanceFilter && restaurant.id) {
+      if (distanceFilter !== null && restaurant.id && distanceCalculations[restaurant.id] !== undefined) {
         const distance = distanceCalculations[restaurant.id];
         matchesDistance = typeof distance === 'number' && isFinite(distance) && distance <= distanceFilter;
-      } else if (selectedCity === "Мое местоположение" && !distanceFilter) {
-        matchesDistance = true;
       }
-      
-      return matchesSearch &&
-             matchesType &&
-             matchesRating &&
-             matchesOpenNow &&
-             matchesCuisine &&
-             matchesPriceRange &&
-             matchesDistance;
+      return matchesSearch && matchesType && matchesRating && matchesOpenNow && matchesCuisine && matchesPriceRange && matchesDistance;
     });
-  }, [
-    restaurants, searchTerm, typeFilter, ratingFilter, openNowFilter,
-    cuisineFilter, priceRangeFilter, selectedCity,
-    distanceFilter, distanceCalculations
-  ]);
+    // console.log(`[RestaurantsPage] Filtering complete. Count after: ${currentRestaurants.length}`);
+    return currentRestaurants;
+  }, [restaurants, searchTerm, typeFilter, ratingFilter, openNowFilter, cuisineFilter, priceRangeFilter, selectedCity, distanceFilter, distanceCalculations]);
 
   if (loading && restaurants.length === 0) return <LoadingSpinner />;
   if (error && restaurants.length === 0 && !loading) return <ErrorDisplay message={error} />;
@@ -377,6 +428,7 @@ const RestaurantsPage = () => {
       <div className="restaurants-container">
         <div className="search-section">
           <div className="search-bar-container">
+          <div className="search-input-wrapper">
             <FaSearch className="search-icon" />
             <input
               type="text"
@@ -385,8 +437,9 @@ const RestaurantsPage = () => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="search-input"
             />
+             </div>
             {isAdmin && (
-              <Link to="/add-restaurant" className="add-restaurant-button">
+              <Link to="/restaurants/add" className="add-restaurant-button">
                 <FiPlus style={{ marginRight: '5px' }} /> Добавить заведение
               </Link>
             )}
@@ -395,17 +448,15 @@ const RestaurantsPage = () => {
 
         <div className="filters-container">
           <div className="filters-row">
-            {/* Тип заведения */}
             <div className="filter-pill">
               <FaUtensils className="filter-icon" />
               <select value={typeFilter} onChange={(e) => setTypeFilter(e.target.value)} className="filter-select">
                 <option value="all">Все типы</option>
                 <option value="ресторан">Рестораны</option><option value="кафе">Кафе</option>
                 <option value="бар">Бары</option><option value="фастфуд">Фастфуд</option>
-                {/* Добавьте другие типы, если они есть */}
+                <option value="кофейня">Кофейни</option>
               </select>
             </div>
-            {/* Кухня */}
             <div className="filter-pill">
               <FaUtensils className="filter-icon" />
               <select value={cuisineFilter} onChange={(e) => setCuisineFilter(e.target.value)} className="filter-select">
@@ -416,29 +467,18 @@ const RestaurantsPage = () => {
                 ))}
               </select>
             </div>
-            {/* Ценовой диапазон */}
             <div className="filter-pill">
               <FiDollarSign className="filter-icon" />
               <select value={priceRangeFilter} onChange={(e) => setPriceRangeFilter(e.target.value)} className="filter-select">
                 {priceRanges.map(range => <option key={range.value} value={range.value}>{range.label}</option>)}
               </select>
             </div>
-            {/* Город */}
             <div className="filter-pill">
               <FaCity className="filter-icon" />
-              <select
-                value={selectedCity}
-                onChange={(e) => {
-                  const newCity = e.target.value;
-                  console.log('ГОРОД В ФИЛЬТРЕ ИЗМЕНЕН НА:', newCity);
-                  setSelectedCity(newCity);
-                }}
-                className="filter-select"
-              >
+              <select value={selectedCity} onChange={(e) => setSelectedCity(e.target.value)} className="filter-select">
                 {cities.map(city => <option key={city.name} value={city.name}>{city.name}</option>)}
               </select>
             </div>
-            {/* Расстояние */}
             <div className="filter-pill">
               <FaMapMarkerAlt className="filter-icon" />
               <select
@@ -447,8 +487,8 @@ const RestaurantsPage = () => {
                 className="filter-select"
                 disabled={
                     (selectedCity === "Мое местоположение" && (locationLoading || (!userLocation && !!locationError))) ||
-                    (selectedCity === ALL_CITIES_OPTION) || // Блокируем если "Любой город"
-                    (selectedCity !== "Мое местоположение" && !cities.find(c => c.name === selectedCity)?.coords) // Блокируем если у города нет координат
+                    (selectedCity === ALL_CITIES_OPTION) ||
+                    (selectedCity !== "Мое местоположение" && !cities.find(c => c.name === selectedCity)?.coords)
                 }
               >
                 <option value="">Любое расстояние</option>
@@ -457,11 +497,12 @@ const RestaurantsPage = () => {
                 <option value="20">До 20 км</option>
               </select>
             </div>
-             {/* Статус геолокации */}
             {selectedCity === "Мое местоположение" && locationLoading && (
-                <div className="location-status-inline filter-pill">Определение...</div>
+                <div className="location-status-inline filter-pill">
+                    <div className="spinner small-spinner" style={{marginRight: '5px'}}></div>
+                    Поиск...
+                </div>
             )}
-            {/* Рейтинг */}
             <div className="filter-pill">
               <FaStar className="filter-icon" />
               <select value={ratingFilter} onChange={(e) => setRatingFilter(Number(e.target.value))} className="filter-select">
@@ -470,7 +511,6 @@ const RestaurantsPage = () => {
                 <option value="4.5">4.5+ ★</option><option value="5">5 ★</option>
               </select>
             </div>
-            {/* Открыто сейчас */}
             <button
               className={`filter-pill filter-button ${openNowFilter ? 'active' : ''}`}
               onClick={() => setOpenNowFilter(!openNowFilter)}
@@ -479,47 +519,57 @@ const RestaurantsPage = () => {
               <FaClock className="filter-icon" /> Открыто сейчас
             </button>
           </div>
-          {selectedCity === "Мое местоположение" && locationError && !userLocation && (
+          {selectedCity === "Мое местоположение" && locationError && !userLocation && !locationLoading && (
             <div className="location-error filter-related-error">
-              <FaExclamationTriangle /> {locationError}
+              <FaExclamationTriangle style={{ marginRight: '5px' }} /> {locationError}
             </div>
           )}
         </div>
 
+        {error && restaurants.length > 0 && !loading && (
+          <div className="operation-error-display"> {/* Изменил класс для стилизации */}
+            <FiAlertCircle style={{ marginRight: '8px', color: 'var(--danger-color, red)'}}/>
+            {error}
+          </div>
+        )}
         {loading && restaurants.length > 0 && <div className="loading-inline">Обновление списка...</div>}
-        {error && restaurants.length > 0 && <div className="error-inline">Не удалось обновить: {error}</div>}
 
         <RestaurantsList
           restaurants={filteredRestaurants}
           distanceCalculations={distanceCalculations}
           selectedCity={selectedCity}
           isAdmin={isAdmin}
+          onDeleteRestaurant={handleDeleteRestaurant}
         />
       </div>
     </div>
   );
 };
 
+// --- Вспомогательные компоненты ---
 const LoadingSpinner = () => (
   <div className="loading-spinner-container">
-    <div className="spinner"></div>
-    <p>Загрузка ресторанов...</p>
+    <div className="spinner large-spinner"></div>
+    <p>Загрузка заведений...</p>
   </div>
 );
 
 const ErrorDisplay = ({ message }) => (
   <div className="error-display-container">
-    <p><FaExclamationTriangle style={{ marginRight: '8px', color: 'var(--warning-color, red)'}}/>Ошибка: {message}</p>
-    <button onClick={() => window.location.reload()} className="retry-button">Обновить</button>
+    <FaExclamationTriangle style={{ fontSize: '2.5rem', color: 'var(--danger-color, red)', marginBottom: '15px'}}/>
+    <h4>Упс! Что-то пошло не так</h4>
+    <p style={{ color: '#555', maxWidth: '400px', margin: '0 auto 15px auto' }}>{message}</p>
+    <button onClick={() => window.location.reload()} className="retry-button">Попробовать снова</button>
   </div>
 );
 
-const RestaurantsList = ({ restaurants, distanceCalculations, selectedCity, isAdmin }) => {
+const RestaurantsList = ({ restaurants, distanceCalculations, selectedCity, isAdmin, onDeleteRestaurant }) => {
   if (!restaurants || restaurants.length === 0) {
     return (
       <div className="no-results">
-        <div className="no-results-icon">🍽️</div><h3>Ничего не найдено</h3>
-        <p>Попробуйте изменить параметры поиска.</p>
+        <div className="no-results-icon">🍽️</div>
+        <h3>Ничего не найдено</h3>
+        <p>Попробуйте изменить параметры поиска или выбрать другой город.</p>
       </div>
     );
   }
@@ -533,7 +583,6 @@ const RestaurantsList = ({ restaurants, distanceCalculations, selectedCity, isAd
                 displayDistance = dist;
             }
         }
-
         return (
           <RestaurantCard
             key={restaurant.id}
@@ -543,11 +592,13 @@ const RestaurantsList = ({ restaurants, distanceCalculations, selectedCity, isAd
               distanceFrom: selectedCity
             }}
             isAdmin={isAdmin}
+            onDelete={onDeleteRestaurant}
           />
         );
       })}
     </div>
   );
 };
+// ---------------------------------
 
 export default RestaurantsPage;

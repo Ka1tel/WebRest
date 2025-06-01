@@ -166,52 +166,80 @@ app.get('/api/auth/check-verification/:email', async (req, res) => {
 app.post('/api/auth/register', async (req, res) => {
   try {
     const { username, email, password } = req.body;
-    
-   
+
     if (!username || !email || !password) {
-      return res.status(400).json({ 
-        error: "Необходимо указать имя пользователя, email и пароль" 
+      return res.status(400).json({
+        error: "Необходимо указать имя пользователя, email и пароль"
       });
     }
 
-    
     const userExists = await pool.query(
-      'SELECT id FROM users WHERE email = $1', 
+      'SELECT id FROM users WHERE email = $1',
       [email]
     );
-    
+
     if (userExists.rows.length > 0) {
-      return res.status(409).json({ 
-        error: "Пользователь с таким email уже существует" 
+      return res.status(409).json({
+        error: "Пользователь с таким email уже существует"
       });
     }
 
-    
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-
-   
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
-    const { rows } = await pool.query(
-      `INSERT INTO users 
-       (username, email, password, verification_code, is_verified) 
-       VALUES ($1, $2, $3, $4, $5) 
-       RETURNING id, username, email, created_at`,
-      [username, email, hashedPassword, verificationCode, false]
-    );
 
- 
-    await sendVerificationEmail(email, verificationCode);
 
-    res.status(201).json({ 
-      success: true,
-      message: 'Регистрация успешна. Проверьте вашу почту для подтверждения.',
-      user: rows[0]
-    });
+      const { rows } = await pool.query( 
+        `INSERT INTO users 
+         (username, email, password, verification_code, is_verified) 
+         VALUES ($1, $2, $3, $4, $5) 
+         RETURNING id, username, email, created_at, is_verified, verification_code`, // Добавил is_verified и verification_code для возможного ответа
+        [username, email, hashedPassword, verificationCode, false]
+      );
+
+      const newUser = rows[0];
+
+      // --- Попытка отправить email ПОСЛЕ успешного создания пользователя ---
+      try {
+        await sendVerificationEmail(email, verificationCode);
+        console.log(`Verification email successfully queued for ${email}`);
+        // Если все успешно (пользователь создан И письмо отправлено/поставлено в очередь)
+        res.status(201).json({
+          success: true,
+          message: 'Регистрация успешна. Проверьте вашу почту для подтверждения.',
+          user: { 
+            id: newUser.id,
+            username: newUser.username,
+            email: newUser.email,
+            created_at: newUser.created_at,
+            is_verified: newUser.is_verified 
+          }
+        });
+      } catch (emailError) {
+        console.error(`Failed to send verification email to ${email} for user ID ${newUser.id}:`, emailError);
+        
+        res.status(201).json({ 
+          success: true, 
+          message: 'Регистрация успешна, но не удалось отправить письмо для подтверждения. Пожалуйста, попробуйте запросить код подтверждения позже или свяжитесь с поддержкой.',
+          warning_email_failed: true,
+          user: {
+            id: newUser.id,
+            username: newUser.username,
+            email: newUser.email,
+            created_at: newUser.created_at,
+            is_verified: newUser.is_verified
+          }
+        });
+      }
+    
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Ошибка сервера' });
+    console.error('Overall registration error:', err);
+   
+    if (err.code === '23505') { 
+        return res.status(409).json({ error: 'Пользователь с такими данными уже существует (возможно, имя пользователя занято).' });
+    }
+    res.status(500).json({ error: 'Ошибка сервера при регистрации' });
   }
 });
 
@@ -996,21 +1024,39 @@ app.put('/api/restaurants/:id', authenticateToken, checkAdmin, async (req, res) 
 
 app.delete('/api/restaurants/:id', authenticateToken, checkAdmin, async (req, res) => {
   try {
-    const { id } = req.params;
+    const { id } = req.params; 
 
+  
+    const numericId = parseInt(id);
+    if (isNaN(numericId)) {
+        return res.status(400).json({ error: "ID ресторана должен быть числом" });
+    }
+
+ 
+    await pool.query('DELETE FROM dishes WHERE restaurant_id = $1', [numericId]);
+    
+    
+    const reviewsToDelete = await pool.query('SELECT id FROM reviews WHERE restaurant_id = $1', [numericId]);
+    if (reviewsToDelete.rows.length > 0) {
+        const reviewIds = reviewsToDelete.rows.map(r => r.id);
+        await pool.query('DELETE FROM review_votes WHERE review_id = ANY($1::int[])', [reviewIds]);
+        await pool.query('DELETE FROM review_replies WHERE review_id = ANY($1::int[])', [reviewIds]);
+        await pool.query('DELETE FROM reviews WHERE restaurant_id = $1', [numericId]);
+    }
+    
     const { rows } = await pool.query(
-      'DELETE FROM restaurants WHERE id = $1 RETURNING id',
-      [id]
+      'DELETE FROM restaurants WHERE id = $1 RETURNING id', 
+      [numericId]
     );
 
     if (rows.length === 0) {
       return res.status(404).json({ error: "Ресторан не найден" });
     }
 
-    res.json({ success: true });
+    res.json({ success: true, message: `Ресторан с ID ${numericId} успешно удален` }); 
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Ошибка сервера' });
+    console.error('Ошибка при удалении ресторана:', err); 
+    res.status(500).json({ error: 'Ошибка сервера при удалении ресторана' }); 
   }
 });
 

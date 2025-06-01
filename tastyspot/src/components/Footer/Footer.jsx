@@ -1,88 +1,94 @@
 import React from 'react';
-import './Footer.css';
-import { FaInstagram, FaFacebook, FaTwitter, FaYoutube, FaPinterest, FaMapMarkerAlt, FaClock, FaPhone, FaEnvelope, FaUtensils } from 'react-icons/fa';
+import './Footer.css'; // Убедитесь, что стили подходят или адаптируйте их
+import {
+  FaInstagram,
+  FaTelegramPlane,
+  FaWhatsapp,
+  FaYoutube,
+  FaPinterest,
+  FaEnvelope,
+  FaUtensils, // Иконка для лого (можно заменить на FaComments, FaStar и т.д.)
+  // FaMapMarkerAlt, FaClock, FaPhone, // Эти иконки больше не нужны в этом контексте
+} from 'react-icons/fa';
 
 const Footer = () => {
+  const siteName = "TastySpot"; // Или ваше название сайта
+
+  const instagramUsername = "tastysp0t"; // Замените на ваш ник в Instagram
+  const telegramUsername = "TastySpot"; // Замените на ваш ник или имя канала в Telegram
+
+
   return (
     <footer className="footer">
-      <div className="footer-wave"></div>
+      <div className="footer-wave"></div> {/* Оставил волну, если она вам нравится */}
       <div className="footer-container">
         {/* Лого и описание */}
         <div className="footer-section">
           <div className="footer-logo">
-            <FaUtensils className="logo-icon" />
-            TastySpot
+            <FaUtensils className="logo-icon" /> {/* Или другая иконка */}
+            {siteName}
           </div>
           <p className="footer-description">
-            Мы создаем незабываемые гастрономические впечатления с 2010 года.
+            Ваш надежный гид по лучшим заведениям города. Читайте обзоры, делитесь впечатлениями!
           </p>
           <div className="footer-newsletter">
-            <input type="email" placeholder="Ваш email" className="newsletter-input" />
-            <button className="newsletter-btn">Подписаться</button>
-          </div>
-        </div>
-
-        {/* Контакты */}
-        <div className="footer-section">
-          <h4>Контакты</h4>
-          <div className="contact-item">
-            <FaMapMarkerAlt className="contact-icon" />
-            <span>г. Минск, ул. Пушкина д. 2</span>
-          </div>
-          <div className="contact-item">
-            <FaClock className="contact-icon" />
-            <span>пн-сб 10:00 - 18:00</span>
-          </div>
-          <div className="contact-item">
-            <FaPhone className="contact-icon" />
-            <span>+375 (29) 123-45-67</span>
-          </div>
-          <div className="contact-item">
-            <FaEnvelope className="contact-icon" />
-            <span>info@tastyspot.by</span>
+            
           </div>
         </div>
 
         {/* Быстрые ссылки */}
         <div className="footer-section">
-          <h4>Быстрые ссылки</h4>
+          <h4>Навигация</h4>
           <ul className="footer-links">
             <li><a href="/">Главная</a></li>
-            <li><a href="/menu">Меню</a></li>
-            <li><a href="/gallery">Галерея</a></li>
+            <li><a href="/restaurants">Заведения</a></li>
+            <li><a href="/dishes">Блюда</a></li>
             <li><a href="/about">О нас</a></li>
-            <li><a href="/contact">Контакты</a></li>
           </ul>
         </div>
 
-        {/* Соцсети */}
+        {/* Соцсети и контакты сайта */}
         <div className="footer-section">
           <h4>Мы в соцсетях</h4>
           <div className="social-icons">
-            <a href="#" className="social-link instagram"><FaInstagram /></a>
-            <a href="#" className="social-link facebook"><FaFacebook /></a>
-            <a href="#" className="social-link twitter"><FaTwitter /></a>
-            <a href="#" className="social-link youtube"><FaYoutube /></a>
-            <a href="#" className="social-link pinterest"><FaPinterest /></a>
+            <a
+              href={`https://www.instagram.com/${instagramUsername}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="social-link instagram"
+            >
+              <FaInstagram />
+            </a>
+            <a
+              href={`https://t.me/${telegramUsername}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Telegram"
+              className="social-link telegram" // Добавим класс для возможной стилизации
+            >
+              <FaTelegramPlane />
+            </a>
+            
           </div>
-          
-          <div className="payment-methods">
-            <h4>Способы оплаты</h4>
-            <div className="payment-icons">
-              <span className="payment-icon">Visa</span>
-              <span className="payment-icon">MasterCard</span>
-              <span className="payment-icon">Мир</span>
-            </div>
+          <div className="footer-contact-site">
+            <h4>Свяжитесь с нами</h4>
+            <ul className="footer-contact-list">
+              
+            <li> 
+    <FaEnvelope className="contact-icon" />
+    <a href="mailto:tastyspot@mail.ru">tastyspot@mail.ru</a>
+  </li>
+              
+            </ul>
           </div>
         </div>
       </div>
 
       <div className="footer-bottom">
-        <p>© {new Date().getFullYear()} TastySpot. Все права защищены.</p>
-        <div className="legal-links">
-          <a href="/privacy">Политика конфиденциальности</a>
-          <a href="/terms">Условия использования</a>
-        </div>
+        <p>© {new Date().getFullYear()} {siteName}. Все права защищены.</p>
+        
+
       </div>
     </footer>
   );

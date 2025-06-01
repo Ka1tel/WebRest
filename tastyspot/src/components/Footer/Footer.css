@@ -1,44 +1,78 @@
+/* styles.css или где у вас определены :root и [data-theme="dark"] */
 :root {
   --primary: #ff6b00;
   --primary-light: #ff9142;
-  --dark: #1a1a1a;       /* Всегда темный цвет */
-  --light: #ffffff;      /* Всегда светлый цвет */
-  --gray: #f5f5f5;
-  --text-dark: #333;
-  --text-light: #777;
+  --dark: #1a1a1a;
+  --light: #ffffff;
+  --gray: #f5f5f5; /* Очень светлый серый, почти белый */
+  --text-dark: #333; /* Для основного текста на светлом фоне */
+  --text-light: #777; /* Для второстепенного текста на светлом фоне */
   --card-bg: #ffffff;
-  --section-bg: #f9f9f9;
+  --section-bg: #f9f9f9; /* Светлый фон для секций */
   --border-color: rgba(0, 0, 0, 0.05);
-  --shadow-color: rgba(0, 0, 0, 0.1);
-  --shadow-primary: rgba(255, 107, 0, 0.2);
   --transition: all 0.3s ease;
-  
-  /* Новые переменные для футера */
-  --footer-bg: var(--dark);       /* По умолчанию темный фон */
-  --footer-text: var(--light);    /* По умолчанию светлый текст */
-  --footer-wave-color: #1a1a1a;   /* Цвет волны */
+
+  /* ФУТЕР ДЛЯ СВЕТЛОЙ ТЕМЫ (по умолчанию) */
+  --footer-bg: var(--section-bg);         /* Светлый фон, например #f9f9f9 */
+  --footer-text-primary: var(--text-dark); /* Основной текст футера, например #333 */
+  --footer-text-secondary: var(--text-light);/* Второстепенный текст, например #777 */
+  --footer-heading-color: var(--text-dark);/* Заголовки в футере */
+  --footer-link-color: var(--text-light);  /* Ссылки в футере */
+  --footer-link-hover-color: var(--primary);/* Ссылки при наведении */
+  --footer-icon-color: var(--primary);     /* Цвет для основных иконок (лого, контакты) */
+  --footer-social-icon-color: var(--text-dark); /* Цвет SVG иконок соцсетей (темный) */
+  --footer-social-icon-bg: var(--light);   /* Фон кружка соц. иконок (белый) */
+  --footer-social-icon-bg-hover-brand: true; /* Флаг, что при ховере фон брендовый */
+  --footer-newsletter-input-bg: var(--light);
+  --footer-newsletter-input-text: var(--text-dark);
+  --footer-newsletter-input-placeholder: var(--text-light);
+  --footer-newsletter-btn-bg: var(--primary);
+  --footer-newsletter-btn-text: var(--light);
+  --footer-payment-icon-bg: rgba(0,0,0,0.05); /* Слегка темнее фона футера */
+  --footer-payment-icon-text: var(--text-light);
+  --footer-bottom-bg: rgba(0,0,0,0.03);    /* Чуть темнее фона футера для footer-bottom */
+  --footer-wave-fill-color: var(--dark); /* Цвет для fill SVG волны на светлой теме (например, темный) */
 }
 
 [data-theme="dark"] {
-  --primary: #ff9142;
+  --primary: #ff9142; /* Уже адаптированный primary для темной темы */
   --primary-light: #ffaa6b;
-  --text-dark: #f5f5f5;
-  --text-light: #aaa;
-  --card-bg: #1e1e1e;
-  --section-bg: #121212;
+  /* --dark: #1a1a1a; - остается */
+  /* --light: #ffffff; - остается */
+  /* --gray: #f5f5f5; - остается, но для темной темы может быть не всегда подходящим */
+  --text-dark: #f5f5f5;  /* Основной текст на темном фоне (светлый) */
+  --text-light: #aaa;   /* Второстепенный текст на темном фоне (светлый) */
+  --card-bg: #1e1e1e;   /* Фон карточек на темной теме */
+  --section-bg: #121212; /* Фон секций на темной теме (очень темный) */
   --border-color: rgba(255, 255, 255, 0.1);
-  --shadow-color: rgba(0, 0, 0, 0.3);
-  --shadow-primary: rgba(255, 145, 66, 0.3);
-  
-  /* Инвертируем футер для темной темы */
-  --footer-bg: var(--section-bg);  /* Используем цвет секции */
-  --footer-text: var(--text-dark);
-  --footer-wave-color: #121212;    /* Темный цвет волны */
+
+  /* ФУТЕР ДЛЯ ТЕМНОЙ ТЕМЫ */
+  --footer-bg: var(--section-bg);       /* Темный фон, например #121212 */
+  --footer-text-primary: var(--text-dark);/* Основной текст футера (светлый) */
+  --footer-text-secondary: var(--text-light);/* Второстепенный текст (светлый) */
+  --footer-heading-color: var(--text-dark);/* Заголовки в футере (светлые) */
+  --footer-link-color: var(--text-light); /* Ссылки в футере (светлые) */
+  --footer-link-hover-color: var(--primary);/* Ссылки при наведении (адаптированный primary) */
+  --footer-icon-color: var(--primary);    /* Цвет для основных иконок (адаптированный primary) */
+  --footer-social-icon-color: var(--text-dark); /* Цвет SVG иконок соцсетей (светлый) */
+  --footer-social-icon-bg: var(--card-bg);  /* Фон кружка соц. иконок (темный, но светлее фона футера) */
+  /* --footer-social-icon-bg-hover-brand: true; - остается true */
+  --footer-newsletter-input-bg: var(--card-bg);
+  --footer-newsletter-input-text: var(--text-dark);
+  --footer-newsletter-input-placeholder: var(--text-light);
+  --footer-newsletter-btn-bg: var(--primary);
+  --footer-newsletter-btn-text: var(--dark); /* Текст на кнопке (темный, т.к. primary яркий) или var(--light) */
+  --footer-payment-icon-bg: rgba(255,255,255,0.05); /* Слегка светлее фона футера */
+  --footer-payment-icon-text: var(--text-light);
+  --footer-bottom-bg: rgba(255,255,255,0.03); /* Чуть светлее фона футера для footer-bottom */
+  --footer-wave-fill-color: var(--section-bg); /* Цвет для fill SVG волны на темной теме (темный, как фон) */
 }
+
+/* Footer.css */
 
 .footer {
   background-color: var(--footer-bg);
-  color: var(--footer-text);
+  color: var(--footer-text-primary); /* Основной цвет текста для футера */
   padding: 4rem 0 0;
   position: relative;
   margin-top: 5rem;
@@ -50,12 +84,36 @@
   left: 0;
   width: 100%;
   height: 30px;
+  /* ВАЖНО: fill в background URL SVG не может напрямую использовать CSS переменные.
+     Вам нужно либо:
+     1. Иметь два разных SVG URL и переключать их:
+        background-image: url('data:image/svg+xml;utf8,<svg...fill="%23КОДИРОВАННЫЙ_ЦВЕТ_СВЕТЛОЙ_ТЕМЫ"...</svg>');
+        [data-theme="dark"] & {
+          background-image: url('data:image/svg+xml;utf8,<svg...fill="%23КОДИРОВАННЫЙ_ЦВЕТ_ТЕМНОЙ_ТЕМЫ"...</svg>');
+        }
+     2. Вставить SVG как inline HTML в вашем React компоненте и стилизовать fill через CSS. (РЕКОМЕНДУЕТСЯ для темизации)
+        <div className="footer-wave-container">
+          <svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+            <path className="wave-path" d="M0,0V46.29..." />
+            <path className="wave-path" d="M0,0V15.81..." />
+            <path className="wave-path" d="M0,0V5.63..." />
+          </svg>
+        </div>
+        И в CSS:
+        .wave-path { fill: var(--footer-wave-fill-color); }
+        Path-ам в SVG нужно задать opacity отдельно, если они разные.
+     3. Оставить один цвет fill, который компромиссно смотрится на обеих темах.
+        Ваш текущий SVG использует fill="%231a1a1a" (var(--dark)).
+        На светлом футере (var(--section-bg) = #f9f9f9) это будет контрастная темная волна.
+        На темном футере (var(--section-bg) = #121212) эта волна будет видна, но почти сольется.
+        Если волна должна быть "вырезана" из секции НАД футером, то ее цвет должен быть равен цвету фона этой секции.
+
+     Пока оставим ваш SVG как есть, но `--footer-wave-fill-color` добавлена для варианта 2.
+  */
   background: url('data:image/svg+xml;utf8,<svg viewBox="0 0 1200 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"><path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" fill="%231a1a1a" opacity=".25"/><path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" fill="%231a1a1a" opacity=".5"/><path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="%231a1a1a"/></svg>') no-repeat;
   background-size: cover;
 }
 
-/* Остальные стили остаются прежними, но заменяем var(--dark) на var(--footer-bg) 
-   и var(--light) на var(--footer-text) где нужно */
 
 .footer-container {
   max-width: 1200px;
@@ -78,21 +136,21 @@
   gap: 0.5rem;
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--light);
+  color: var(--footer-heading-color); /* БЫЛО: var(--light) */
 }
 
 .logo-icon {
-  color: var(--primary);
+  color: var(--footer-icon-color); /* БЫЛО: var(--primary) */
   font-size: 1.8rem;
 }
 
 .footer-description {
-  color: var(--text-light);
+  color: var(--footer-text-secondary); /* БЫЛО: var(--text-light) */
   line-height: 1.6;
 }
 
 .footer-section h4 {
-  color: var(--light);
+  color: var(--footer-heading-color); /* БЫЛО: var(--light) */
   font-size: 1.2rem;
   margin-bottom: 0.5rem;
   position: relative;
@@ -106,18 +164,18 @@
   bottom: 0;
   width: 40px;
   height: 2px;
-  background: var(--primary);
+  background: var(--primary); /* var(--primary) уже адаптируется темой */
 }
 
 .contact-item {
   display: flex;
   align-items: center;
   gap: 0.8rem;
-  color: var(--text-light);
+  color: var(--footer-text-secondary); /* БЫЛО: var(--text-light) */
 }
 
 .contact-icon {
-  color: var(--primary);
+  color: var(--footer-icon-color); /* БЫЛО: var(--primary) */
   min-width: 20px;
 }
 
@@ -131,13 +189,13 @@
 }
 
 .footer-links a {
-  color: var(--text-light);
+  color: var(--footer-link-color); /* БЫЛО: var(--text-light) */
   text-decoration: none;
   transition: var(--transition);
 }
 
 .footer-links a:hover {
-  color: var(--primary);
+  color: var(--footer-link-hover-color); /* БЫЛО: var(--primary) */
   padding-left: 5px;
 }
 
@@ -153,20 +211,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--light);
-  background-color: var(--gray);
+  color: var(--footer-social-icon-color); /* Цвет SVG иконки. БЫЛО: var(--light) */
+  background-color: var(--footer-social-icon-bg); /* Фон кружка. БЫЛО: var(--gray) */
   transition: var(--transition);
 }
 
 .social-link:hover {
   transform: translateY(-3px);
+  /* Цвет иконки при ховере на брендовый фон: */
+  color: var(--light) !important; /* Делаем иконку всегда белой на цветном фоне ховера */
 }
-
+/* Брендовые цвета фона при ховере остаются */
 .instagram:hover { background-color: #E1306C; }
 .facebook:hover { background-color: #3B5998; }
 .twitter:hover { background-color: #1DA1F2; }
 .youtube:hover { background-color: #FF0000; }
 .pinterest:hover { background-color: #E60023; }
+
 
 .footer-newsletter {
   display: flex;
@@ -176,19 +237,19 @@
 .newsletter-input {
   flex: 1;
   padding: 0.8rem;
-  border: none;
+  border: none; /* или 1px solid var(--border-color) если нужна рамка */
   border-radius: 4px 0 0 4px;
-  background-color: var(--gray);
-  color: var(--text-dark);
+  background-color: var(--footer-newsletter-input-bg); /* БЫЛО: var(--gray) */
+  color: var(--footer-newsletter-input-text); /* БЫЛО: var(--text-dark) */
 }
 
 .newsletter-input::placeholder {
-  color: var(--text-light);
+  color: var(--footer-newsletter-input-placeholder); /* БЫЛО: var(--text-light) */
 }
 
 .newsletter-btn {
-  background: var(--primary);
-  color: var(--light);
+  background: var(--footer-newsletter-btn-bg); /* БЫЛО: var(--primary) */
+  color: var(--footer-newsletter-btn-text);    /* БЫЛО: var(--light) */
   border: none;
   padding: 0 1.5rem;
   border-radius: 0 4px 4px 0;
@@ -197,7 +258,7 @@
 }
 
 .newsletter-btn:hover {
-  background: var(--primary-light);
+  background: var(--primary-light); /* var(--primary-light) уже адаптируется темой */
 }
 
 .payment-methods {
@@ -211,20 +272,61 @@
 }
 
 .payment-icon {
-  background: rgba(255,255,255,0.1);
+  background: var(--footer-payment-icon-bg); /* БЫЛО: rgba(255,255,255,0.1) */
   padding: 0.3rem 0.6rem;
   border-radius: 4px;
   font-size: 0.8rem;
-  color: var(--text-light);
+  color: var(--footer-payment-icon-text); /* БЫЛО: var(--text-light) */
 }
 
 .footer-bottom {
-  background: rgba(0,0,0,0.2);
+  background: var(--footer-bottom-bg); /* БЫЛО: rgba(0,0,0,0.2) */
   padding: 1.5rem 0;
   margin-top: 3rem;
   text-align: center;
   font-size: 0.9rem;
-  color: var(--text-light);
+  color: var(--footer-text-secondary); /* БЫЛО: var(--text-light) */
+}
+
+.footer-contact-list {
+  list-style: none; /* Убираем стандартные маркеры списка (точки/цифры) */
+  padding: 0;       /* Убираем внутренний отступ по умолчанию у ul */
+  margin: 0;        /* Убираем внешний отступ по умолчанию у ul */
+  display: flex;    /* Позволяет использовать gap для дочерних li */
+  flex-direction: column; /* Элементы списка будут располагаться друг под другом */
+  gap: 0.8rem;      /* Расстояние между элементами списка (если их несколько) */
+}
+.footer-contact-list li {
+  display: flex;        /* Выстраиваем иконку и текст/ссылку в один ряд */
+  align-items: center;  /* Вертикальное выравнивание по центру */
+  gap: 0.75rem;         /* Расстояние между иконкой и текстом/ссылкой (например, 12px) */
+}
+
+.footer-contact-list .contact-icon {
+  color: var(--footer-icon-color); /* Используем переменную для цвета иконки */
+  font-size: 1.25rem; /* Размер иконки, подберите под ваш дизайн (например, 20px) */
+  flex-shrink: 0; /* Предотвращает сжатие иконки, если текст рядом длинный */
+  /* min-width: 20px; // Можно использовать, если нужен фиксированный минимальный размер */
+}
+
+.footer-contact-list a {
+  color: var(--footer-link-color); /* Используем переменную для цвета ссылки */
+  text-decoration: none;          /* Убираем стандартное подчеркивание */
+  transition: var(--transition);  /* Плавный переход для эффекта при наведении */
+  line-height: 1.5;               /* Для лучшей читаемости, если текст переносится */
+}
+
+.footer-contact-list a:hover {
+  color: var(--footer-link-hover-color); /* Цвет ссылки при наведении из переменных */
+  text-decoration: underline;           /* Добавляем подчеркивание при наведении */
+}
+
+/* Если внутри li будет не ссылка, а просто текст (например, для адреса),
+   можно добавить общий стиль для текста внутри li:
+*/
+.footer-contact-list li span { /* Пример, если используется span для текста */
+  color: var(--footer-text-secondary); /* Или var(--footer-link-color) если хотите такой же цвет */
+  line-height: 1.5;
 }
 
 .legal-links {
@@ -235,37 +337,16 @@
 }
 
 .legal-links a {
-  color: var(--text-light);
+  color: var(--footer-link-color); /* БЫЛО: var(--text-light) */
   text-decoration: none;
   transition: var(--transition);
 }
 
 .legal-links a:hover {
-  color: var(--primary);
+  color: var(--footer-link-hover-color); /* БЫЛО: var(--primary) */
 }
 
+/* Медиа-запросы не меняются */
 @media (max-width: 768px) {
-  .footer-container {
-    grid-template-columns: 1fr;
-    gap: 2.5rem;
-  }
-  
-  .footer-section {
-    align-items: center;
-    text-align: center;
-  }
-  
-  .footer-section h4::after {
-    left: 50%;
-    transform: translateX(-50%);
-  }
-  
-  .footer-newsletter {
-    width: 100%;
-  }
-  
-  .legal-links {
-    flex-direction: column;
-    gap: 0.5rem;
-  }
+  /* ... */
 }

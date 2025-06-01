@@ -86,29 +86,33 @@
   margin-bottom: 1.5rem;
 }
 
-/* === MODIFIED SECTION START === */
 .search-bar-container {
-  position: relative; /* Keeps context for the absolute positioned search icon */
-  max-width: 700px; /* Increased slightly to better accommodate button, adjust as needed */
-  margin: 0 auto;
-  display: flex; /* Make it a flex container */
-  align-items: center; /* Vertically align items */
-  gap: 15px; /* Space between input and button */
+  max-width: 700px; /* Максимальная ширина для всей панели */
+  margin: 0 auto;   /* Центрирование */
+  display: flex;
+  align-items: center;
+  gap: 15px; /* Расстояние между полем ввода и кнопкой "Добавить" */
 }
 
+.search-input-wrapper {
+  position: relative; /* Контекст для абсолютного позиционирования иконки */
+  flex: 1;            /* Обертка занимает все доступное место до кнопки "Добавить" */
+  display: flex;      /* Чтобы инпут внутри мог использовать width: 100% */
+}
 .search-icon {
   position: absolute;
-  left: 15px;
+  left: 15px; /* Отступ иконки от левого края .search-input-wrapper */
   top: 50%;
   transform: translateY(-50%);
   color: var(--text-light);
-  z-index: 1; /* Ensure icon is above input background */
+  z-index: 1; /* Выше фона инпута */
+  pointer-events: none; /* Клики проходят "сквозь" иконку на инпут */
 }
 
 .search-input {
-  flex: 1; /* Make input take available space */
-  min-width: 0; /* Prevent overflow issues with flex items */
-  padding: 12px 20px 12px 45px; /* Left padding makes space for the icon */
+  width: 100%; /* Инпут занимает всю ширину .search-input-wrapper */
+  padding: 12px 20px 12px 45px; /* Левый паддинг для текста, чтобы не залезал под иконку */
+                                /* 15px (отступ иконки) + ~15-20px (ширина иконки) + 10px (запас) = ~40-45px */
   border-radius: 30px;
   border: 1px solid var(--border-color);
   background-color: var(--card-bg);
@@ -116,8 +120,8 @@
   font-size: 1rem;
   transition: var(--transition);
   box-shadow: 0 1px 3px var(--shadow-color);
+  line-height: normal; /* Убедимся, что высота строки не мешает вертикальному выравниванию */
 }
-/* === MODIFIED SECTION END === */
 
 .search-input:focus {
   outline: none;

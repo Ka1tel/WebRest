@@ -20,6 +20,52 @@
     --image-overlay: linear-gradient(to top, rgba(0,0,0,0.8), transparent 60%);
   }
   
+  .restaurant-card-wrapper {
+    position: relative;
+    display: block;
+    border-radius: var(--card-border-radius, 8px);
+    overflow: hidden;
+    box-shadow: var(--card-shadow, 0 4px 12px rgba(0,0,0,0.1));
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .restaurant-card-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--card-shadow-hover, 0 6px 16px rgba(0,0,0,0.15));
+  }
+
+  .restaurant-card-admin-actions {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    z-index: 20;
+    display: flex; /* Остается flex, даже если одна кнопка, для будущего расширения */
+    /* gap: 10px; - gap не нужен, если кнопка одна */
+  }
+
+  .restaurant-card-admin-button:hover, /* Если класс .delete убрали */
+.restaurant-card-admin-button.delete:hover { /* Если класс .delete оставили */
+  background-color: var(--danger-color, #e74c3c);
+  transform: scale(1.1);
+}
+.restaurant-card-admin-button { /* Общий стиль для админ-кнопки */
+  background-color: rgba(0, 0, 0, 0.65);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease, transform 0.2s ease;
+  font-size: 1.1rem;
+  border: none;
+  cursor: pointer;
+  text-decoration: none;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+  margin-top: 50px;
+}
+
   .restaurant-card {
     display: flex;
     flex-direction: column;
@@ -64,7 +110,7 @@
     transform: scale(1.05);
   }
   
-  .photo-counter {
+  /* .photo-counter {
     position: absolute;
     bottom: 12px;
     right: 12px;
@@ -76,7 +122,7 @@
     z-index: 2;
     backdrop-filter: blur(4px);
     border: 1px solid rgba(255, 255, 255, 0.1);
-  }
+  } */
   
   .nav-button {
     position: absolute;

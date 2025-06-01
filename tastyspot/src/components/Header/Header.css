@@ -296,6 +296,54 @@ header {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(255, 107, 0, 0.2);
 }
+.burger-menu-button {
+  display: none; /* Скрыта по умолчанию */
+  background: none;
+  border: none;
+  color: var(--text-dark);
+  font-size: 1.8rem; /* Размер иконки */
+  cursor: pointer;
+  padding: 0.3rem; /* Немного отступов для удобства нажатия */
+  z-index: 1005; /* Выше других элементов хедера, если нужно */
+  transition: var(--transition);
+}
+
+.burger-menu-button:hover {
+  color: var(--primary);
+}
+.main-nav.mobile-nav {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: 70px; /* Высота хедера */
+  left: 0;
+  right: 0;
+  background-color: var(--light);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+  z-index: 999; /* Ниже хедера, но выше остального контента страницы */
+  border-top: 1px solid rgba(0,0,0,0.05);
+  padding-bottom: 0.5rem; /* Небольшой отступ снизу */
+}
+
+.main-nav.mobile-nav .nav-item {
+  padding: 0.8rem 1.5rem; /* Увеличиваем паддинги для мобильных */
+  width: 100%; /* Растягиваем на всю ширину */
+  text-align: left; /* Выравнивание текста для мобильного меню */
+  border-bottom: 1px solid var(--gray); /* Разделители */
+}
+
+.main-nav.mobile-nav .nav-item:last-child {
+  border-bottom: none; /* Убираем разделитель у последнего элемента */
+}
+
+.main-nav.mobile-nav .nav-item::after {
+  display: none; /* Убираем подчеркивание для мобильных ссылок */
+}
+
+.main-nav.mobile-nav .nav-item:hover {
+  background-color: var(--gray); /* Фон при наведении */
+  color: var(--primary); /* Цвет текста при наведении */
+}
 
 /* Адаптивность */
 @media (max-width: 1024px) {
@@ -335,6 +383,15 @@ header {
   
   .admin-reviews-button {
     padding: 8px;
+  }
+  .main-nav.desktop-nav { /* Changed selector */
+    display: none; /* Скрываем ДЕСКТОПНУЮ навигацию на мобильных */
+  }
+
+  .burger-menu-button { /* Показываем бургер-кнопку */
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 }
 

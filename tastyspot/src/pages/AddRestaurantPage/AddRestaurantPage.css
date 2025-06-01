@@ -287,10 +287,9 @@ select.form-input:focus {
   background: var(--primary-dark); transform: translateY(-2px);
   box-shadow: 0 6px 18px var(--shadow-primary);
 }
-.submit-button.main-submit-button:disabled { /* ... */ }
-[data-theme="dark"] .submit-button.main-submit-button:disabled { /* ... */ }
 
-.spinner.small-spinner { /* ... */ }
+
+
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 1024px) { 
