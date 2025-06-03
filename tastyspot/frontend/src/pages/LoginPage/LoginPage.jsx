@@ -4,6 +4,7 @@ import { FiMail, FiLock } from 'react-icons/fi';
 import axios from 'axios';
 import './LoginPage.css';
 import { jwtDecode } from 'jwt-decode';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 
 export default function LoginPage() {
   const [formData, setFormData] = useState({
@@ -28,7 +29,7 @@ export default function LoginPage() {
     setError('');
     
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
         email: formData.email,
         password: formData.password
       });

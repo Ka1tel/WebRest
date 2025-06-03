@@ -3,6 +3,8 @@ import axios from 'axios';
 import { Link } from 'react-router-dom'; // Добавьте эту строку, если ее нет
 import { FiFilter, FiSearch, FiX, FiChevronDown } from 'react-icons/fi';
 import './DishesPage.css';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
+
 
 const DishesPage = () => {
   const [dishes, setDishes] = useState([]);
@@ -24,13 +26,13 @@ const DishesPage = () => {
   const [availableCategories, setAvailableCategories] = useState([]);
   const [availableCuisines, setAvailableCuisines] = useState([]);
   const [selectedDish, setSelectedDish] = useState(null); // Для хранения выбранного блюда
-
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [dishesRes, ingredientsRes] = await Promise.all([
-          axios.get('http://localhost:5000/api/dishes'),
-          axios.get('http://localhost:5000/api/ingredients')
+          axios.get(`${API_BASE_URL}/api/dishes`),
+          axios.get(`${API_BASE_URL}/api/ingredients`)
         ]);
 
         setDishes(dishesRes.data);

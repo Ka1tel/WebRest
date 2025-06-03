@@ -5,13 +5,13 @@ import { FaSearch, FaClock, FaStar, FaUtensils, FaMapMarkerAlt, FaExclamationTri
 import { FiDollarSign, FiPlus, FiAlertCircle } from 'react-icons/fi';
 import RestaurantCard from '../../components/RestaurantCard/RestaurantCard';
 import AddRestaurantPage from '../AddRestaurantPage/AddRestaurantPage';
-import './RestaurantsPage.css'; // Убедитесь, что путь правильный
+import './RestaurantsPage.css'; 
 import { Link, useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 const ALL_CITIES_OPTION = "Любой город";
 
-// --- Загрузка API Яндекс.Карт ---
+
 const loadYmaps = () => {
   return new Promise((resolve, reject) => {
     if (window.ymaps) {
@@ -19,7 +19,7 @@ const loadYmaps = () => {
       return;
     }
     const script = document.createElement('script');
-    // ЗАМЕНИТЕ YOUR_YANDEX_MAPS_API_KEY НА ВАШ КЛЮЧ API ЯНДЕКС.КАРТ
+   
     script.src = 'https://api-maps.yandex.ru/2.1/?apikey=bbaaf96a-e8f7-4897-8ace-d6791f94450e&lang=ru_RU';
     script.onload = () => {
       if (window.ymaps) {
@@ -36,11 +36,11 @@ const loadYmaps = () => {
     document.head.appendChild(script);
   });
 };
-// ---------------------------------
+
 
 const RestaurantsPage = () => {
   const navigate = useNavigate();
-  // const [ymapsApi, setYmapsApi] = useState(null); // Раскомментируйте, если будете использовать ymaps API
+  
 
   const [restaurants, setRestaurants] = useState([]);
   const [uniqueCuisines, setUniqueCuisines] = useState(['all']);
@@ -64,15 +64,6 @@ const RestaurantsPage = () => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [isAdmin, setIsAdmin] = useState(false);
 
-  // useEffect для Яндекс.Карт (если нужен)
-  // useEffect(() => {
-  //   loadYmaps().then(api => {
-  //     setYmapsApi(api);
-  //     console.log('[RestaurantsPage] Yandex Maps API loaded successfully.');
-  //   }).catch(err => {
-  //     console.error('[RestaurantsPage] Failed to load Yandex Maps API:', err);
-  //   });
-  // }, []);
 
   useEffect(() => {
     const storedUser = localStorage.getItem('user');

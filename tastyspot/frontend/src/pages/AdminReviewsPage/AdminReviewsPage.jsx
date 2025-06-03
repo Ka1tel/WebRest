@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'; // Добавил useC
 import axios from 'axios';
 import { FiSearch, FiTrash2, FiChevronLeft, FiChevronRight } from 'react-icons/fi';
 import './AdminReviewsPage.css';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 
 const AdminReviewsPage = () => {
   const [reviews, setReviews] = useState([]);
@@ -49,7 +50,7 @@ const AdminReviewsPage = () => {
         return;
       }
 
-      const response = await axios.get(`http://localhost:5000/api/admin/reviews`, {
+      const response = await axios.get(`${API_BASE_URL}/api/admin/reviews`, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'application/json',
@@ -139,7 +140,7 @@ const AdminReviewsPage = () => {
         setIsLoading(false);
         return;
       }
-      await axios.delete(`http://localhost:5000/api/admin/reviews/${reviewId}`, {
+      await axios.delete(`${API_BASE_URL}/api/admin/reviews/${reviewId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

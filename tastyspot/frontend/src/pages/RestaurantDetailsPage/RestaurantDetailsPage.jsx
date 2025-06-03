@@ -9,6 +9,8 @@ import {
 } from 'react-icons/fi';
 import './RestaurantDetailsPage.css';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
+
 const StarRating = ({ rating, onRatingChange, readOnly = false }) => {
   const handleClick = (newRating) => {
     if (!readOnly && onRatingChange) {
@@ -133,9 +135,9 @@ const RestaurantDetailsPage = () => {
         setLoading(true);
         
         const [restaurantRes, menuRes, reviewsRes] = await Promise.all([
-          axios.get(`http://localhost:5000/api/restaurants/${id}`),
-          axios.get(`http://localhost:5000/api/menu`, { params: { restaurant_id: id } }),
-          axios.get(`http://localhost:5000/api/reviews`, { params: { restaurant_id: id } })
+          axios.get(`${API_BASE_URL}/api/restaurants/${id}`),
+          axios.get(`${API_BASE_URL}/api/menu`, { params: { restaurant_id: id } }),
+          axios.get(`${API_BASE_URL}/api/reviews`, { params: { restaurant_id: id } })
         ]);
         console.log('Restaurant data:', restaurantRes.data);
         if (restaurantRes.data) {
@@ -367,7 +369,7 @@ const RestaurantDetailsPage = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `http://localhost:5000/api/reviews`,
+        `${API_BASE_URL}/api/reviews`,
         { 
           restaurant_id: id,
           rating: newReview.rating,
@@ -413,7 +415,7 @@ const RestaurantDetailsPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
-        `http://localhost:5000/api/reviews/${reviewId}`,
+        `${API_BASE_URL}/api/reviews/${reviewId}`,
         { headers: { 'Authorization': `Bearer ${token}` }, data: { restaurant_id: id } }
       );
       
@@ -478,7 +480,7 @@ const RestaurantDetailsPage = () => {
       // 5. Отправка на сервер
       const token = localStorage.getItem('token');
       await axios.post(
-        `http://localhost:5000/api/reviews/${reviewId}/vote`,
+        `${API_BASE_URL}/api/reviews/${reviewId}/vote`,
         { vote_type: voteType },
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
@@ -508,7 +510,7 @@ const RestaurantDetailsPage = () => {
     try {
       const token = localStorage.getItem('token');
       const response = await axios.post(
-        `http://localhost:5000/api/reviews/${reviewId}/replies`,
+        `${API_BASE_URL}/api/reviews/${reviewId}/replies`,
         { 
           text: replyText.trim(),
           user_id: user.id // Отправляем ID пользователя
@@ -564,7 +566,7 @@ const RestaurantDetailsPage = () => {
     try {
       const token = localStorage.getItem('token');
       await axios.delete(
-        `http://localhost:5000/api/reviews/${reviewId}/replies/${replyId}`,
+        `${API_BASE_URL}/api/reviews/${reviewId}/replies/${replyId}`,
         { headers: { 'Authorization': `Bearer ${token}` } }
       );
 

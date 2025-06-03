@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './AddRestaurantPage.css';
 
-const API_BASE_URL = 'http://localhost:5000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 
 // Суб-компонент MenuItemForm остается таким же, как в предыдущих версиях
 const MenuItemForm = ({ item, index, onChange, onRemove, isOnlyItem }) => {

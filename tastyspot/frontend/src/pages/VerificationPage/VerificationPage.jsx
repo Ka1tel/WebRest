@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { FiCheck, FiRefreshCw } from 'react-icons/fi';
 import axios from 'axios';
 import './VerificationPage.css';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 
 export default function VerificationPage() {
   const [code, setCode] = useState('');
@@ -28,7 +29,7 @@ export default function VerificationPage() {
     setError('');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/verify', {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/verify`, {
         email,
         code
       });
@@ -57,7 +58,7 @@ export default function VerificationPage() {
     setError('');
 
     try {
-      await axios.post('http://localhost:5000/api/auth/resend-code', { email });
+      await axios.post(`${API_BASE_URL}/api/auth/resend-code`, { email });
       setResendSuccess(true);
       startCooldown(60); // 60 секунд cooldown
     } catch (err) {
