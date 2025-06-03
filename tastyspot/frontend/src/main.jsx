@@ -1,14 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import App from './App';
-import RegistrationPage from './pages/RegistrationPage/RegistrationPage';
+import App from './App.jsx';
+import RegistrationPage from './pages/RegistrationPage/RegistrationPage.jsx';
 import RestaurantsPage from './pages/RestaurantsPage/RestaurantsPage.jsx';
-import ReviewsPage from './pages/ReviewsPage/ReviewsPage';
-import DishesPage from './pages/DishesPage/DishesPage';
-import MainPage from './pages/MainPage/MainPage';
-import AboutPage from './pages/AboutPage/AboutPage'; // Импортируем новый компонент
-import RestaurantDetailsPage from './pages/RestaurantDetailsPage/RestaurantDetailsPage';
+import ReviewsPage from './pages/ReviewsPage/ReviewsPage.jsx';
+import DishesPage from './pages/DishesPage/DishesPage.jsx';
+import MainPage from './pages/MainPage/MainPage.jsx';
+import AboutPage from './pages/AboutPage/AboutPage.jsx'; // Импортируем новый компонент
+import RestaurantDetailsPage from './pages/RestaurantDetailsPage/RestaurantDetailsPage.jsx';
 import LoginPage from './pages/LoginPage/LoginPage.jsx';
 import VerificationPage from './pages/VerificationPage/VerificationPage.jsx';
 import AddRestaurantPage from './pages/AddRestaurantPage/AddRestaurantPage.jsx';
