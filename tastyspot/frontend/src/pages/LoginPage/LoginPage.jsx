@@ -35,15 +35,15 @@ export default function LoginPage() {
       });
 
       if (response.data.success) {
-        // Сохраняем токен и данные пользователя
+      
         localStorage.setItem('token', response.data.token);
         localStorage.setItem('user', JSON.stringify(response.data.user));
         
-        // Проверяем, откуда пришел пользователь
+        
         const from = location.state?.from?.pathname || '/';
         navigate(from, {
           state: { 
-            token: response.data.token // Передаем токен в state
+            token: response.data.token 
           }
         });
       }
@@ -77,7 +77,7 @@ export default function LoginPage() {
         <p className="auth-subtitle">Ваш гид по миру вкуса</p>
       </div>
 
-      {/* Добавленная надпись "Вход" */}
+    
       <h2 className="auth-form-title">Вход</h2>
 
       {error && <div className="error-message">{error}</div>}

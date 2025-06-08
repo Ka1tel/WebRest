@@ -1,4 +1,4 @@
-// pages/RestaurantsPage/RestaurantsPage.js
+
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import axios from 'axios';
 import { FaSearch, FaClock, FaStar, FaUtensils, FaMapMarkerAlt, FaExclamationTriangle, FaCity } from 'react-icons/fa';
