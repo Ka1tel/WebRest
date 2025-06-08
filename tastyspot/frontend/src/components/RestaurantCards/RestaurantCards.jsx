@@ -13,44 +13,41 @@ const RestaurantCards = () => {
   const PLACEHOLDER_IMAGE = 'https://i.pinimg.com/236x/c8/cc/24/c8cc24bba37a25c009647b8875aae0e3.jpg';
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 
-  // Улучшенная проверка URL изображения
-  const isValidImageUrl = (url) => {
-    if (!url || typeof url !== 'string') return false;
-    
-    const trimmedUrl = url.trim();
-    if (!trimmedUrl) return false;
-    
-    try {
-      // Проверяем, что URL абсолютный и имеет правильный формат
-      const urlObj = new URL(trimmedUrl);
-      if (!['http:', 'https:'].includes(urlObj.protocol)) return false;
-      
-      // Проверяем расширение файла (необязательно, но полезно)
-      const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp'];
-      const hasValidExtension = imageExtensions.some(ext => 
-        trimmedUrl.toLowerCase().includes(ext)
-      );
-      
-      return hasValidExtension;
-    } catch {
-      return false;
-    }
-  };
+  // Улучшенная, более гибкая проверка URL
+const isValidImageUrl = (url) => {
+  if (!url || typeof url !== 'string') return false;
+  
+  const trimmedUrl = url.trim();
+  if (!trimmedUrl) return false;
+  
+  
+  return trimmedUrl.startsWith('http') || trimmedUrl.startsWith('/');
+};
 
-  // Получаем первую рабочую фотографию из строки с несколькими URL
-  const getFirstValidImage = (urlString) => {
-    if (!urlString || typeof urlString !== 'string') return PLACEHOLDER_IMAGE;
+
+const getFirstValidImage = (urlString) => {
+  if (!urlString || typeof urlString !== 'string') return PLACEHOLDER_IMAGE;
+  
+  const urls = urlString.split(',')
+    .map(url => url.trim())
+    .filter(url => url.length > 0);
+  
+  for (const url of urls) {
+    if (isValidImageUrl(url)) {
     
-    // Разделяем URL по запятым и фильтруем пустые
-    const urls = urlString.split(',')
-      .map(url => url.trim())
-      .filter(url => url.length > 0);
-    
-    // Находим первый валидный URL
-    const validUrl = urls.find(url => isValidImageUrl(url));
-    
-    return validUrl || PLACEHOLDER_IMAGE;
-  };
+      if (url.startsWith('/')) {
+       
+        const baseUrl = API_BASE_URL.endsWith('/') ? API_BASE_URL.slice(0, -1) : API_BASE_URL;
+        return `${baseUrl}${url}`;
+      }
+      
+      return url;
+    }
+  }
+  
+
+  return PLACEHOLDER_IMAGE;
+};
 
   useEffect(() => {
     const fetchTopRatedRestaurants = async () => {
@@ -62,7 +59,7 @@ const RestaurantCards = () => {
             order: 'desc'
           }
         });
-        // console.log('Raw API response data:', response.data); // Оставляем для отладки при необходимости
+        
 
         if (!response.data) throw new Error('Пустой ответ от сервера');
 
@@ -71,12 +68,12 @@ const RestaurantCards = () => {
             const imageFields = [
               item.image_url,
               item.photo_url,
-              item.phone_url, // phone_url - вероятно, опечатка, но оставляем на всякий случай
+              item.phone_url, 
               item.image,
               item.photo
             ].filter(Boolean); 
             
-            // console.log('Processing item:', item); // Оставляем для отладки при необходимости
+           
             let finalImageUrl = PLACEHOLDER_IMAGE;
             for (const field of imageFields) {
               const url = getFirstValidImage(field);
@@ -91,7 +88,7 @@ const RestaurantCards = () => {
               name: item.name || 'Без названия',
               description: item.description || 'Описание отсутствует',
               image: finalImageUrl,
-              rating: item.rating ? parseFloat(item.rating) : 0, // Здесь рейтинг становится 0, если не указан
+              rating: item.rating ? parseFloat(item.rating) : 0, 
               address: item.address || 'Адрес не указан',
               type: item.establishment_type || 'тип не указан',
               workingHours: item.working_hours || 'Часы работы не указаны'
@@ -165,7 +162,7 @@ const RestaurantCards = () => {
         src="/images/no-restaurants.png" 
         alt="Нет ресторанов"
         width={200}
-        onError={handleImageError} // Добавил обработчик и для этой картинки
+        onError={handleImageError}
       />
       <h3>Рестораны не найдены</h3>
       <p>Попробуйте обновить страницу или зайти позже</p>
@@ -191,7 +188,7 @@ const RestaurantCards = () => {
                   onError={handleImageError}
                 />
                 <div className="rating-badge">
-                  {/* ИЗМЕНЕНИЕ ЗДЕСЬ */}
+                
                   ★ {restaurant.rating === 0 ? 'Новый' : restaurant.rating.toFixed(1)}
                 </div>
               </div>
