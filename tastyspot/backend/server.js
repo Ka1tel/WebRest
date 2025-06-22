@@ -1111,6 +1111,29 @@ app.post('/api/restaurants', authenticateToken, checkAdmin, async (req, res) => 
   }
 });
 
+app.get('/api/stats', async (req, res) => {
+  try {
+    
+    const [restaurantCountResult, reviewCountResult] = await Promise.all([
+      pool.query('SELECT COUNT(*) FROM restaurants'),
+      pool.query('SELECT COUNT(*) FROM reviews')
+    ]);
+
+    
+    const restaurantCount = parseInt(restaurantCountResult.rows[0].count, 10);
+    const reviewCount = parseInt(reviewCountResult.rows[0].count, 10);
+
+    res.json({
+      restaurantCount: restaurantCount,
+      reviewCount: reviewCount
+    });
+
+  } catch (err) {
+    console.error('Ошибка при получении статистики:', err);
+    res.status(500).json({ error: 'Ошибка сервера при получении статистики' });
+  }
+});
+
 app.post('/api/dishes', authenticateToken, checkAdmin, async (req, res) => {
   try {
     const { 
