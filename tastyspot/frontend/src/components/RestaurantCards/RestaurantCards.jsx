@@ -13,7 +13,7 @@ const RestaurantCards = () => {
   const PLACEHOLDER_IMAGE = 'https://i.pinimg.com/236x/c8/cc/24/c8cc24bba37a25c009647b8875aae0e3.jpg';
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000'; 
 
-  // Улучшенная, более гибкая проверка URL
+  
 const isValidImageUrl = (url) => {
   if (!url || typeof url !== 'string') return false;
   
