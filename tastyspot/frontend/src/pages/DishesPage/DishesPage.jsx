@@ -379,7 +379,7 @@ const DishesPage = () => {
               <div className="dish-modal-details">
                 <div className="detail-item">
                   <span className="detail-label">Цена:</span>
-                  <span className="detail-value">{selectedDish.price/24} BYN</span>
+                  <span className="detail-value">{(selectedDish.price/24).toFixed(2)} BYN</span>
                 </div>
                 
                 {selectedDish.weight && (
@@ -564,7 +564,7 @@ const DishCardGroup = ({ name, variants, onDishClick }) => {
                   />
                 </div>
                 <div className="variant-info">
-                  <div className="variant-price">{variant.price/24} BYN</div>
+                  <div className="variant-price">{(variant.price/24).toFixed(2)} BYN</div>
                   <div className="variant-weight">{variant.weight} г</div>
                   {variant.calories && (
                     <div className="variant-calories">{variant.calories} ккал</div>
@@ -604,7 +604,7 @@ const DishCard = ({ dish, isGrouped, isVariant, onClick }) => {
         
         <div className="dish-meta">
           <div className="price-tag">
-            <span className="price">{dish.price/24} BYN</span>
+            <span className="price">{(dish.price/24).toFixed(2)} BYN</span>
             {dish.weight && <span className="weight">{dish.weight} г</span>}
           </div>
           

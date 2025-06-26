@@ -763,7 +763,7 @@ const RestaurantDetailsPage = () => {
                         {dish.description && <p>{dish.description}</p>}
                         <div className="dish-meta">
                           {dish.weight && <span>{dish.weight} г</span>}
-                          <span className="price">{dish.price} ₽</span>
+                          <span className="price">{(dish.price/24).toFixed(2)} BYN</span>
                         </div>
                       </div>
                     </div>
