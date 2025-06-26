@@ -202,7 +202,7 @@ const DishesPage = () => {
           </div>
 
           <div className="filter-group">
-  <label>Цена (₽)</label>
+  <label>Цена (BYN)</label>
   <div className="range-filters">
     <div className="single-range-filter">
       <label>От:</label>
@@ -215,7 +215,7 @@ const DishesPage = () => {
         onChange={(e) => handleRangeChange('price', 0, e.target.value)}
         className="custom-slider"
       />
-      <div className="range-value">{filters.priceRange[0]} ₽</div>
+      <div className="range-value">{filters.priceRange[0]} BYN</div>
     </div>
     
     <div className="single-range-filter">
@@ -229,7 +229,7 @@ const DishesPage = () => {
         onChange={(e) => handleRangeChange('price', 1, e.target.value)}
         className="custom-slider"
       />
-      <div className="range-value">{filters.priceRange[1]} ₽</div>
+      <div className="range-value">{filters.priceRange[1]} BYN</div>
     </div>
   </div>
 </div>
@@ -379,7 +379,7 @@ const DishesPage = () => {
               <div className="dish-modal-details">
                 <div className="detail-item">
                   <span className="detail-label">Цена:</span>
-                  <span className="detail-value">{selectedDish.price} ₽</span>
+                  <span className="detail-value">{selectedDish.price/24} BYN</span>
                 </div>
                 
                 {selectedDish.weight && (
@@ -564,7 +564,7 @@ const DishCardGroup = ({ name, variants, onDishClick }) => {
                   />
                 </div>
                 <div className="variant-info">
-                  <div className="variant-price">{variant.price} ₽</div>
+                  <div className="variant-price">{variant.price/24} BYN</div>
                   <div className="variant-weight">{variant.weight} г</div>
                   {variant.calories && (
                     <div className="variant-calories">{variant.calories} ккал</div>
@@ -604,7 +604,7 @@ const DishCard = ({ dish, isGrouped, isVariant, onClick }) => {
         
         <div className="dish-meta">
           <div className="price-tag">
-            <span className="price">{dish.price} ₽</span>
+            <span className="price">{dish.price/24} BYN</span>
             {dish.weight && <span className="weight">{dish.weight} г</span>}
           </div>
           
